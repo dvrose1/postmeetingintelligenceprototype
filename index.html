@@ -232,9 +232,28 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 
 /* ===== NEW: Page-level tabs ===== */
 .page-tabs { display: flex; gap: 0; border-bottom: 2px solid #e5e7eb; margin-bottom: 28px; }
-.page-tab { padding: 12px 20px; font-size: 16px; font-weight: 600; color: #6b7280; border-bottom: 2px solid transparent; margin-bottom: -2px; cursor: pointer; white-space: nowrap; transition: color 0.15s; }
+.page-tab { padding: 14px 24px; font-size: 18px; font-weight: 700; color: #6b7280; border-bottom: 3px solid transparent; margin-bottom: -2px; cursor: pointer; white-space: nowrap; transition: color 0.15s; }
 .page-tab:hover { color: #1a1a2e; }
 .page-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+.page-tabs { border-bottom-width: 3px; }
+
+/* Suggested indicator on cards */
+.suggested-banner { display: flex; align-items: center; gap: 6px; padding: 6px 10px; background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; margin-bottom: 10px; font-size: 12px; color: #92400e; font-weight: 500; }
+.suggested-banner svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+/* Approval checkbox */
+.item-card-approve { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #f3f4f6; }
+.approve-checkbox { width: 18px; height: 18px; accent-color: #2563eb; cursor: pointer; }
+.approve-label { font-size: 12px; font-weight: 500; color: #6b7280; cursor: pointer; }
+.approve-label.approved { color: #16a34a; }
+.item-card.approved { border-color: #86efac; background: #f0fdf4; }
+.item-card.approved .item-card-approve { border-top-color: #bbf7d0; }
+
+/* Approval progress */
+.approval-progress { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; margin-bottom: 16px; font-size: 13px; color: #1e40af; font-weight: 500; }
+.approval-progress svg { width: 16px; height: 16px; flex-shrink: 0; }
+.approval-progress-bar { flex: 1; height: 6px; background: #dbeafe; border-radius: 3px; overflow: hidden; }
+.approval-progress-fill { height: 100%; background: #2563eb; border-radius: 3px; transition: width 0.3s ease; }
 
 /* "For your review" tab content */
 .review-meeting-header { margin-bottom: 20px; }
@@ -350,7 +369,7 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
         </div>
         <div class="review-footer-right">
           <button class="btn-red" onclick="downloadInsights()">Download insights</button>
-          <button class="btn-primary" onclick="confirmReviewInsights()">Confirm insights</button>
+          <button class="btn-primary" id="confirmFollowUpsBtn" onclick="confirmReviewInsights()" disabled>Confirm Follow Ups</button>
         </div>
       </div>
     </div>
@@ -624,38 +643,38 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 <script>
 // ============ DATA ============
 const actionItems = [
-  { id: 'AI-002', priority: 'High', title: 'Fix Bridgerton campaign data and share corrected slide', desc: 'Revise the Bridgerton campaign slide to correct the data fumble and share the accurate numbers in the next shareout.', owners: 'Stephanie Zhang, Stephanie Shamrock, Kathryn Fernandez', due: 'Next MPR', source: 'So I think in the next refreshes we definitely have some room to. Optimize the OSE mix in the base campaign, but we know that in TikTok ToTok and this is where TikTok TikTok actually happened. The OSE worked really well for us for TikTok ToTok and the next one that should be coming. I think Lauren youre confirming when well get that...' },
-  { id: 'AI-003', priority: 'High', title: 'Optimize and report on OSE asset mix for Crumble', desc: 'Review and optimize the OSE (Other Say) asset mix for the Crumble campaign, focusing on improving performance and featuring the new Key Lime variant in the March TikTok Top Feed.', owners: 'Stephanie Zhang, Lauren Baker', due: 'March 2026', source: 'I will fix the slide for the Bridgerton cause that was a big fumble, but I will give you the correct numbers.' },
-  { id: 'AI-006', priority: 'High', title: 'Implement end-to-end sales tracking for Costco campaign', desc: 'Coordinate with the Costco sales team to obtain weekly sales numbers and align them with campaign flight dates, providing an end-to-end view of campaign impact for the Devour initiative.', owners: 'Stephanie Zhang, Michelle Wen, Kathryn Shamrock', due: 'During Devour campaign flight (March-April 2026) or Before next MPR', source: 'So I think for Devour, the Costco initiative that we have this year, well try to bring more of that end to end view by getti...' },
-  { id: 'AI-007', priority: 'High', title: 'Deliver Meta and channel-by-channel ROI breakdown', desc: 'Provide a detailed breakdown of Meta ROI performance, specifically for the core body wash and new Costco campaigns, as well as a channel-by-channel TikTok, YouTube, Pinterest to inform platform allocation decisions for upcoming campaigns.', owners: 'Stephanie Zhang, Michelle Wen, Emma Bacon, Kathryn Shamrock', due: 'Before next MPR', source: 'Yeah, I can give you that breakdown, uh, is the follow up. But Speaking of Costco, I think this is where this, this slide is th...' },
-  { id: 'AI-008', priority: 'High', title: 'Ramp Up Walmart auto campaigns and test brand term negation', desc: 'Increase investment in Walmart auto campaigns for the Key Lime launch to accelerate relevancy and ramp up sales, test the impact of negating brand terms, and consider auto campaign to maintain brand support for innovation.', owners: 'Danielle Benson, Walmart team', due: 'ASAP, before next MPR', source: 'So were going to put some extra juice behind auto campaigns to make sure were getting the relevancy up as soon as pos...' },
-  { id: 'AI-011', priority: 'High', title: 'Summarize Target optimization recommendations and pause lowest performing SKU', desc: 'Summarize and share optimization recommendations for Target retail media, including expected outcomes and volume impact, lowest performing organic SKU in Target display campaigns to improve overall efficiency.', owners: 'Henry Chen, Kathryn Shamrock', due: 'Before next MPR; pause SKU by March 6, 2026 or This week (by March 6, 2026)', source: 'If you could just summarize where you think we have opportunity to optimize and what you will get out of it, that...' },
-  { id: 'AI-031', priority: 'Medium', title: 'Leverage Google ABC reports and request top YouTube opportunities', desc: 'Utilize Googles ABC reports and best practice checklists to benchmark Doves YouTube content, and engage Google to provide Dove-specific top three opportunities for YouTube channel optimization.', owners: 'Stephanie Zhang, Amanda Schneider', due: 'Before next MPR', source: 'Theres a checklist of like best practices and and uh creative elements that they, Reviews drive really strong performance...' },
-  { id: 'AI-034', priority: 'Medium', title: 'Audit bar Street Fight impact on Walmart sales', desc: 'Conduct an audit to assess the impact of the bar street fight on Walmart sales and share findings with the team.', owners: 'Danielle Benson, Kathryn Shamrock, team', due: 'Before next MPR', source: 'we know that we executed the incremental from the bar street fight, So were working on an audit right now to see how th...' },
-  { id: 'AI-035', priority: 'Medium', title: 'Provide new-to-brand metrics for Target display', desc: 'Provide new-to-brand metrics for Target display campaigns after the campaign or at mid-end of flight, focusing on audience targeting effectiveness.', owners: 'Henry Chen, Kathryn Shamrock', due: 'Mid-flight or end of flight (TBD)', source: 'But to get that metric, I wont get that until mid flight or end of flight. Ill follow up once I have the metric.' },
-  { id: 'AI-036', priority: 'Medium', title: 'Advance creative reporting granularity', desc: 'Organize a huddle to discuss and implement more granular creative reporting and analysis for future sessions to capture deeper optimization learnings.', owners: 'Stephanie Zhang, Tatiana, Jillian', due: 'Before next MPR', source: 'I do want to huddle a little bit on how to bring more of the creative reporting forward because I obviously like for this...' }
+  { id: 'AI-002', priority: 'High', title: 'Fix Bridgerton campaign data and share corrected slide', desc: 'Revise the Bridgerton campaign slide to correct the data fumble and share the accurate numbers in the next shareout.', owners: 'Stephanie Zhang, Stephanie Shamrock, Kathryn Fernandez', due: 'Next MPR', source: 'So I think in the next refreshes we definitely have some room to. Optimize the OSE mix in the base campaign, but we know that in TikTok ToTok and this is where TikTok TikTok actually happened. The OSE worked really well for us for TikTok ToTok and the next one that should be coming. I think Lauren youre confirming when well get that...', suggestedOwners: ['Lauren Baker'] },
+  { id: 'AI-003', priority: 'High', title: 'Optimize and report on OSE asset mix for Crumble', desc: 'Review and optimize the OSE (Other Say) asset mix for the Crumble campaign, focusing on improving performance and featuring the new Key Lime variant in the March TikTok Top Feed.', owners: 'Stephanie Zhang, Lauren Baker', due: 'March 2026', source: 'I will fix the slide for the Bridgerton cause that was a big fumble, but I will give you the correct numbers.', suggestedOwners: null },
+  { id: 'AI-006', priority: 'High', title: 'Implement end-to-end sales tracking for Costco campaign', desc: 'Coordinate with the Costco sales team to obtain weekly sales numbers and align them with campaign flight dates, providing an end-to-end view of campaign impact for the Devour initiative.', owners: 'Stephanie Zhang, Michelle Wen, Kathryn Shamrock', due: 'During Devour campaign flight (March-April 2026) or Before next MPR', source: 'So I think for Devour, the Costco initiative that we have this year, well try to bring more of that end to end view by getti...', suggestedOwners: ['Danielle Benson'] },
+  { id: 'AI-007', priority: 'High', title: 'Deliver Meta and channel-by-channel ROI breakdown', desc: 'Provide a detailed breakdown of Meta ROI performance, specifically for the core body wash and new Costco campaigns, as well as a channel-by-channel TikTok, YouTube, Pinterest to inform platform allocation decisions for upcoming campaigns.', owners: 'Stephanie Zhang, Michelle Wen, Emma Bacon, Kathryn Shamrock', due: 'Before next MPR', source: 'Yeah, I can give you that breakdown, uh, is the follow up. But Speaking of Costco, I think this is where this, this slide is th...', suggestedOwners: null },
+  { id: 'AI-008', priority: 'High', title: 'Ramp Up Walmart auto campaigns and test brand term negation', desc: 'Increase investment in Walmart auto campaigns for the Key Lime launch to accelerate relevancy and ramp up sales, test the impact of negating brand terms, and consider auto campaign to maintain brand support for innovation.', owners: 'Danielle Benson, Walmart team', due: 'ASAP, before next MPR', source: 'So were going to put some extra juice behind auto campaigns to make sure were getting the relevancy up as soon as pos...', suggestedOwners: ['Kathryn Shamrock'] },
+  { id: 'AI-011', priority: 'High', title: 'Summarize Target optimization recommendations and pause lowest performing SKU', desc: 'Summarize and share optimization recommendations for Target retail media, including expected outcomes and volume impact, lowest performing organic SKU in Target display campaigns to improve overall efficiency.', owners: 'Henry Chen, Kathryn Shamrock', due: 'Before next MPR; pause SKU by March 6, 2026 or This week (by March 6, 2026)', source: 'If you could just summarize where you think we have opportunity to optimize and what you will get out of it, that...', suggestedOwners: null },
+  { id: 'AI-031', priority: 'Medium', title: 'Leverage Google ABC reports and request top YouTube opportunities', desc: 'Utilize Googles ABC reports and best practice checklists to benchmark Doves YouTube content, and engage Google to provide Dove-specific top three opportunities for YouTube channel optimization.', owners: 'Stephanie Zhang, Amanda Schneider', due: 'Before next MPR', source: 'Theres a checklist of like best practices and and uh creative elements that they, Reviews drive really strong performance...', suggestedOwners: ['Michelle Wen'] },
+  { id: 'AI-034', priority: 'Medium', title: 'Audit bar Street Fight impact on Walmart sales', desc: 'Conduct an audit to assess the impact of the bar street fight on Walmart sales and share findings with the team.', owners: 'Danielle Benson, Kathryn Shamrock, team', due: 'Before next MPR', source: 'we know that we executed the incremental from the bar street fight, So were working on an audit right now to see how th...', suggestedOwners: null },
+  { id: 'AI-035', priority: 'Medium', title: 'Provide new-to-brand metrics for Target display', desc: 'Provide new-to-brand metrics for Target display campaigns after the campaign or at mid-end of flight, focusing on audience targeting effectiveness.', owners: 'Henry Chen, Kathryn Shamrock', due: 'Mid-flight or end of flight (TBD)', source: 'But to get that metric, I wont get that until mid flight or end of flight. Ill follow up once I have the metric.', suggestedOwners: ['Stephanie Zhang'] },
+  { id: 'AI-036', priority: 'Medium', title: 'Advance creative reporting granularity', desc: 'Organize a huddle to discuss and implement more granular creative reporting and analysis for future sessions to capture deeper optimization learnings.', owners: 'Stephanie Zhang, Tatiana, Jillian', due: 'Before next MPR', source: 'I do want to huddle a little bit on how to bring more of the creative reporting forward because I obviously like for this...', suggestedOwners: null }
 ];
 
 const keyDecisions = [
-  { id: 'D-001', confidence: '90%', type: 'Fix critical', title: 'Pause the lowest performing organic SKU (Rostaria) in Target search to improve overall efficiency', desc: 'Rostaria has the lowest clicks and performance among creative assets. The team recommends pausing it to focus on higher-performing SKUs.', owners: 'Henry Chen', source: 'So the team recommends to pause the lowest performing organic SKU list area. If you guys agree, we can execute this week.' },
-  { id: 'D-002', confidence: '90%', type: 'Change strategy', title: 'Shift retail media dollars at Target from The Trade Desk and online Target.com to higher-performing tactics TikTok and YouTube', desc: "Target's best converting placements are TikTok and YouTube, while CPMs are high on other platforms. The team will reallocate spend to maximize efficiency and conversion.", owners: 'Henry Chen', source: 'So thats why from a next step optimization perspective, we are going to shift some dollars from the trade desk and onli...' },
-  { id: 'D-003', confidence: '85%', type: 'Defer action', title: 'Defer implementation of product line separation for limited editions (e.g., Bridgerton, Crumble) until at least Q2 or Q3 2026', desc: 'The team acknowledges the need for more granular reporting by limited edition but confirms that the new model breakout will not be available until Q2 or Q3 2026, impacting planning cycles.', owners: 'Stephanie Zhang', source: 'So the team recommends to pause the lowest performing organic SKU list area. If you guys agree, we can execute this week.' },
-  { id: 'D-004', confidence: '85%', type: 'Change strategy', title: 'Diversify digital social investment for limited edition campaigns (Crumble, Bridgerton) beyond Meta and TikTok to include Pinterest, Reddit, and Snap', desc: 'Meta and TikTok underperformed for mixed product type campaigns, while Pinterest performed well. The team agrees to diversify the mix in 2026 to improve digital social performance.', owners: 'Stephanie Zhang', source: 'So the team recommends to pause the lowest performing organic SKU list area. If you guys agree, we can execute this week.' },
-  { id: 'D-005', confidence: '90%', type: 'Fix critical', title: 'Align national media campaign messaging with retailer promotions (e.g., Costco) to maximize impact and avoid missed opportunities', desc: "A disconnect between national media campaign messaging and Costco's in-store promo led to poor ROI and missed sales lift. The team agrees future campaigns must synchronize messaging and timing with retailer promos.", owners: 'Stephanie Zhang, Michelle Wen', source: 'And so I I think the timing wise I like this was definitely a missed opportunity to really drive. Like, hey, we knew this p...' },
-  { id: 'D-006', confidence: '65%', type: 'Confirm approach', title: 'Increase investment in the new Costco campaign to $1M, focusing on boosting baseline sales rather than relying on promo-driven spikes', desc: "Last year's $30K spend failed to drive sustained sales. This year, a $1M investment is intended to boost baseline sales, with learnings from previous campaigns applied to maximize impact.", owners: 'Michelle Wen, Jayme Jansky', source: 'Well, I will just say your campaign this year is gonna be youre spending way more money. You have a like $1,000,000 set...' },
-  { id: 'D-007', confidence: '50%', type: 'Test experiment', title: 'Test negating brand terms within Walmart auto search campaigns to improve efficiency, and consider creating a separate auto campaign for brand support', desc: 'The team is currently testing the impact of negating brand terms in auto campaigns, as this could improve efficiency. They are also considering a parallel auto campaign to maintain brand support for innovation.', owners: 'Danielle Benson', source: 'So great question. We have negatives right now that are happening in auto. And so a big conversation with the team...' }
+  { id: 'D-001', confidence: '90%', type: 'Fix critical', title: 'Pause the lowest performing organic SKU (Rostaria) in Target search to improve overall efficiency', desc: 'Rostaria has the lowest clicks and performance among creative assets. The team recommends pausing it to focus on higher-performing SKUs.', owners: 'Henry Chen', source: 'So the team recommends to pause the lowest performing organic SKU list area. If you guys agree, we can execute this week.', suggestedOwners: ['Michelle Wen', 'Kathryn Shamrock'], suggestedType: null },
+  { id: 'D-002', confidence: '90%', type: 'Change strategy', title: 'Shift retail media dollars at Target from The Trade Desk and online Target.com to higher-performing tactics TikTok and YouTube', desc: "Target's best converting placements are TikTok and YouTube, while CPMs are high on other platforms. The team will reallocate spend to maximize efficiency and conversion.", owners: 'Henry Chen', source: 'So thats why from a next step optimization perspective, we are going to shift some dollars from the trade desk and onli...', suggestedOwners: null, suggestedType: null },
+  { id: 'D-003', confidence: '85%', type: 'Defer action', title: 'Defer implementation of product line separation for limited editions (e.g., Bridgerton, Crumble) until at least Q2 or Q3 2026', desc: 'The team acknowledges the need for more granular reporting by limited edition but confirms that the new model breakout will not be available until Q2 or Q3 2026, impacting planning cycles.', owners: 'Stephanie Zhang', source: 'So the team recommends to pause the lowest performing organic SKU list area. If you guys agree, we can execute this week.', suggestedOwners: null, suggestedType: ['Confirm approach'] },
+  { id: 'D-004', confidence: '85%', type: 'Change strategy', title: 'Diversify digital social investment for limited edition campaigns (Crumble, Bridgerton) beyond Meta and TikTok to include Pinterest, Reddit, and Snap', desc: 'Meta and TikTok underperformed for mixed product type campaigns, while Pinterest performed well. The team agrees to diversify the mix in 2026 to improve digital social performance.', owners: 'Stephanie Zhang', source: 'So the team recommends to pause the lowest performing organic SKU list area. If you guys agree, we can execute this week.', suggestedOwners: ['Michelle Wen'], suggestedType: null },
+  { id: 'D-005', confidence: '90%', type: 'Fix critical', title: 'Align national media campaign messaging with retailer promotions (e.g., Costco) to maximize impact and avoid missed opportunities', desc: "A disconnect between national media campaign messaging and Costco's in-store promo led to poor ROI and missed sales lift. The team agrees future campaigns must synchronize messaging and timing with retailer promos.", owners: 'Stephanie Zhang, Michelle Wen', source: 'And so I I think the timing wise I like this was definitely a missed opportunity to really drive. Like, hey, we knew this p...', suggestedOwners: null, suggestedType: null },
+  { id: 'D-006', confidence: '65%', type: 'Confirm approach', title: 'Increase investment in the new Costco campaign to $1M, focusing on boosting baseline sales rather than relying on promo-driven spikes', desc: "Last year's $30K spend failed to drive sustained sales. This year, a $1M investment is intended to boost baseline sales, with learnings from previous campaigns applied to maximize impact.", owners: 'Michelle Wen, Jayme Jansky', source: 'Well, I will just say your campaign this year is gonna be youre spending way more money. You have a like $1,000,000 set...', suggestedOwners: ['Kathryn Shamrock'], suggestedType: ['Change strategy'] },
+  { id: 'D-007', confidence: '50%', type: 'Test experiment', title: 'Test negating brand terms within Walmart auto search campaigns to improve efficiency, and consider creating a separate auto campaign for brand support', desc: 'The team is currently testing the impact of negating brand terms in auto campaigns, as this could improve efficiency. They are also considering a parallel auto campaign to maintain brand support for innovation.', owners: 'Danielle Benson', source: 'So great question. We have negatives right now that are happening in auto. And so a big conversation with the team...', suggestedOwners: null, suggestedType: null }
 ];
 
 const openQuestions = [
-  { id: 'OQ-001', status: 'Follow up required', statusClass: 'badge-status-follow', topic: 'Limited edition breakout timing', question: 'When will the product line data be separated for limited editions, and when will that information be available for planning?', owners: 'Stephanie Zhang', raisedBy: 'Kathryn Shamrock', source: 'When did you say youll have the product line separated between the limited editions? Will that happen for 26?' },
-  { id: 'OQ-002', status: 'Follow up required', statusClass: 'badge-status-follow', topic: 'Meta ROI breakdown', question: 'What is the exact ROI for Meta in the recent campaigns, and how does it compare to other platforms?', owners: 'Stephanie Zhang', raisedBy: 'Michelle Wen', source: 'It should be. Ill get back to you, but it shouldnt be too far off. Its definitely not under a dollar. I can tell you that its at ma...' },
-  { id: 'OQ-003', status: 'Data investigation', statusClass: 'badge-status-investigation', topic: 'Conversion rate analysis', question: 'How are we performing with conversion rates for Crumble versus last year, and is conversion an opportunity for optimization?', owners: 'Danielle Benson', raisedBy: 'Kathryn Shamrock', source: 'It should be. Ill get back to you, but it shouldnt be too far off. Its definitely not under a dollar. I can tell you that its at ma...' },
-  { id: 'OQ-004', status: 'Data investigation', statusClass: 'badge-status-investigation', topic: 'Costco campaign attribution', question: 'Is there any way to bring more attribution for in-store demand at Costco, and can we have a more end-to-end view of campaign impact?', owners: 'Stephanie Zhang', raisedBy: 'Stephanie Zhang', source: 'But what kind of indicators do we have connected to in store velocity on Costco? Like how are we, how will we be able? I...' },
-  { id: 'OQ-005', status: 'Strategic debate', statusClass: 'badge-status-debate', topic: 'Plan B for Costco campaign', question: 'What is our Plan B if the $1M Costco campaign does not achieve the required sales threshold?', owners: 'Kathryn Shamrock', raisedBy: 'Kathryn Shamrock', source: "I'm just worried. I want us to have. I don't know what our Plan B is yet if it's not working with the million that we're spending..." },
-  { id: 'OQ-006', status: 'Strategic debate', statusClass: 'badge-status-debate', topic: 'OSE content optimization', question: 'How can we optimize the OSE (Other Say) content mix in the Crumble base campaign to improve performance, given that current OSE is underperforming compared to last year?', owners: 'Lauren Baker, Lauren (OSE lead)', raisedBy: 'Stephanie Zhang', source: 'I think in the next refreshes we definitely have some room to. Optimize the OSE mix in the base campaign, but we know t...' },
-  { id: 'OQ-007', status: 'Deferred', statusClass: 'badge-status-deferred', topic: 'Creative reporting granularity', question: 'How can we bring more granular creative reporting and analysis forward in future sessions to capture deeper optimization learnings?', owners: 'Stephanie Zhang', raisedBy: 'Stephanie Zhang', source: 'I do want to huddle a little bit on how to bring more of the creative reporting forward because I obviously like for this...' },
-  { id: 'OQ-008', status: 'Data investigation', statusClass: 'badge-status-investigation', topic: 'Conversion optimization learnings', question: "What are the learnings that could help optimize conversion if we're driving so much traffic to PDPs, and where are we green, yellow, red in terms of conversion performance?", owners: 'Danielle Benson', raisedBy: 'Kathryn Shamrock', source: "I'm also curious too. So Kathryn put a question in the chat about are there learnings that we could use to optimize con..." },
-  { id: 'OQ-009', status: 'Data investigation', statusClass: 'badge-status-investigation', topic: 'Optimization recommendations and expected outcomes', question: 'What are the specific optimization recommendations for Target, and what is the expected outcome in terms of additional volume driven?', owners: 'Henry Chen', raisedBy: 'Kathryn Shamrock', source: 'what are the optimization recommendations? I know you put that somewhere here, but just so we can have it quick and...' }
+  { id: 'OQ-001', status: 'Follow up required', statusClass: 'badge-status-follow', topic: 'Limited edition breakout timing', question: 'When will the product line data be separated for limited editions, and when will that information be available for planning?', owners: 'Stephanie Zhang', raisedBy: 'Kathryn Shamrock', source: 'When did you say youll have the product line separated between the limited editions? Will that happen for 26?', suggestedOwners: ['Michelle Wen'], suggestedStatus: null },
+  { id: 'OQ-002', status: 'Follow up required', statusClass: 'badge-status-follow', topic: 'Meta ROI breakdown', question: 'What is the exact ROI for Meta in the recent campaigns, and how does it compare to other platforms?', owners: 'Stephanie Zhang', raisedBy: 'Michelle Wen', source: 'It should be. Ill get back to you, but it shouldnt be too far off. Its definitely not under a dollar. I can tell you that its at ma...', suggestedOwners: null, suggestedStatus: null },
+  { id: 'OQ-003', status: 'Data investigation', statusClass: 'badge-status-investigation', topic: 'Conversion rate analysis', question: 'How are we performing with conversion rates for Crumble versus last year, and is conversion an opportunity for optimization?', owners: 'Danielle Benson', raisedBy: 'Kathryn Shamrock', source: 'It should be. Ill get back to you, but it shouldnt be too far off. Its definitely not under a dollar. I can tell you that its at ma...', suggestedOwners: null, suggestedStatus: ['Follow up required'] },
+  { id: 'OQ-004', status: 'Data investigation', statusClass: 'badge-status-investigation', topic: 'Costco campaign attribution', question: 'Is there any way to bring more attribution for in-store demand at Costco, and can we have a more end-to-end view of campaign impact?', owners: 'Stephanie Zhang', raisedBy: 'Stephanie Zhang', source: 'But what kind of indicators do we have connected to in store velocity on Costco? Like how are we, how will we be able? I...', suggestedOwners: ['Michelle Wen'], suggestedStatus: null },
+  { id: 'OQ-005', status: 'Strategic debate', statusClass: 'badge-status-debate', topic: 'Plan B for Costco campaign', question: 'What is our Plan B if the $1M Costco campaign does not achieve the required sales threshold?', owners: 'Kathryn Shamrock', raisedBy: 'Kathryn Shamrock', source: "I'm just worried. I want us to have. I don't know what our Plan B is yet if it's not working with the million that we're spending...", suggestedOwners: null, suggestedStatus: null },
+  { id: 'OQ-006', status: 'Strategic debate', statusClass: 'badge-status-debate', topic: 'OSE content optimization', question: 'How can we optimize the OSE (Other Say) content mix in the Crumble base campaign to improve performance, given that current OSE is underperforming compared to last year?', owners: 'Lauren Baker, Lauren (OSE lead)', raisedBy: 'Stephanie Zhang', source: 'I think in the next refreshes we definitely have some room to. Optimize the OSE mix in the base campaign, but we know t...', suggestedOwners: null, suggestedStatus: null },
+  { id: 'OQ-007', status: 'Deferred', statusClass: 'badge-status-deferred', topic: 'Creative reporting granularity', question: 'How can we bring more granular creative reporting and analysis forward in future sessions to capture deeper optimization learnings?', owners: 'Stephanie Zhang', raisedBy: 'Stephanie Zhang', source: 'I do want to huddle a little bit on how to bring more of the creative reporting forward because I obviously like for this...', suggestedOwners: ['Kathryn Shamrock'], suggestedStatus: ['Strategic debate'] },
+  { id: 'OQ-008', status: 'Data investigation', statusClass: 'badge-status-investigation', topic: 'Conversion optimization learnings', question: "What are the learnings that could help optimize conversion if we're driving so much traffic to PDPs, and where are we green, yellow, red in terms of conversion performance?", owners: 'Danielle Benson', raisedBy: 'Kathryn Shamrock', source: "I'm also curious too. So Kathryn put a question in the chat about are there learnings that we could use to optimize con...", suggestedOwners: null, suggestedStatus: null },
+  { id: 'OQ-009', status: 'Data investigation', statusClass: 'badge-status-investigation', topic: 'Optimization recommendations and expected outcomes', question: 'What are the specific optimization recommendations for Target, and what is the expected outcome in terms of additional volume driven?', owners: 'Henry Chen', raisedBy: 'Kathryn Shamrock', source: 'what are the optimization recommendations? I know you put that somewhere here, but just so we can have it quick and...', suggestedOwners: ['Stephanie Zhang'], suggestedStatus: null }
 ];
 
 // ============ STATE ============
@@ -663,6 +682,26 @@ let currentTab = 'actions';
 let currentPageTab = 'review';
 let currentReviewSubTab = 'actions';
 let confirmCallback = null;
+let approvalState = {}; // tracks approved items e.g. 'action-AI-002': true
+
+function toggleApproval(key) {
+  approvalState[key] = !approvalState[key];
+  renderReviewContent();
+  updateConfirmButton();
+}
+
+function updateConfirmButton() {
+  const totalItems = actionItems.length + keyDecisions.length + openQuestions.length;
+  const approvedCount = Object.values(approvalState).filter(v => v).length;
+  const btn = document.getElementById('confirmFollowUpsBtn');
+  if (btn) {
+    if (approvedCount >= totalItems) {
+      btn.disabled = false;
+    } else {
+      btn.disabled = true;
+    }
+  }
+}
 
 // ============ FUNCTIONS ============
 
@@ -735,9 +774,9 @@ function generateInsights() {
   }, 2000);
 }
 
-// Confirm review insights (from the inline "For your review" footer)
+// Confirm review follow ups (from the inline "For your review" footer)
 function confirmReviewInsights() {
-  showToast('The insights have been uploaded and reviewed.');
+  showToast('Follow ups confirmed and shared with your team.');
 }
 
 // Download insights
@@ -788,11 +827,17 @@ function closeDetail() {
 // ============ RENDER SECTIONS ============
 
 function renderActionItemsSection(headerText) {
-  let html = `<div class="detail-section-header"><div class="detail-count">${headerText}</div><button class="btn-add-item" onclick="openAddActionItem()">+ Add new item</button></div>`;
+  const total = actionItems.length;
+  const approved = actionItems.filter(i => approvalState['action-'+i.id]).length;
+  let html = `<div class="approval-progress"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>${approved} of ${total} items approved</span><div class="approval-progress-bar"><div class="approval-progress-fill" style="width:${(approved/total)*100}%"></div></div></div>`;
+  html += `<div class="detail-section-header"><div class="detail-count">${headerText}</div><button class="btn-add-item" onclick="openAddActionItem()">+ Add new item</button></div>`;
   html += '<div style="font-size:12px;font-weight:600;color:#6b7280;margin-bottom:8px;">Action items</div>';
   actionItems.forEach(item => {
     const badgeClass = item.priority === 'High' ? 'badge-high' : 'badge-medium';
-    html += `<div class="item-card">
+    const isApproved = approvalState['action-'+item.id];
+    const hasSuggestions = item.suggestedOwners && item.suggestedOwners.length > 0;
+    const suggestionsHtml = hasSuggestions ? `<div class="suggested-banner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Suggested owners: ${item.suggestedOwners.join(', ')} &mdash; <a href="#" onclick="openEditActionItem('${item.id}');return false;" style="color:#92400e;font-weight:600;">Review &amp; assign</a></div>` : '';
+    html += `<div class="item-card ${isApproved ? 'approved' : ''}" id="card-action-${item.id}">
       <div class="item-card-actions">
         <button class="action-icon" onclick="openEditActionItem('${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
         <button class="action-icon" onclick="openDeleteItem('action item', '${item.title.substring(0,40)}...')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
@@ -801,6 +846,7 @@ function renderActionItemsSection(headerText) {
         <span class="badge ${badgeClass}">${item.priority}</span>
         <span class="item-id">ID: ${item.id}</span>
       </div>
+      ${suggestionsHtml}
       <div class="item-card-title">${item.title}</div>
       <div class="item-card-desc">${item.desc}</div>
       <div class="item-card-meta">
@@ -810,16 +856,29 @@ function renderActionItemsSection(headerText) {
         <span class="item-card-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Due: ${item.due}</span>
       </div>
       <div class="item-card-source"><span>Source:</span> "${item.source.substring(0,120)}..." <a href="#" class="read-more">Read more</a></div>
+      <div class="item-card-approve">
+        <input type="checkbox" class="approve-checkbox" id="approve-action-${item.id}" ${isApproved ? 'checked' : ''} onchange="toggleApproval('action-${item.id}')">
+        <label for="approve-action-${item.id}" class="approve-label ${isApproved ? 'approved' : ''}">${isApproved ? 'Approved' : 'Approve this item'}</label>
+      </div>
     </div>`;
   });
   return html;
 }
 
 function renderKeyDecisionsSection(headerText) {
-  let html = `<div class="detail-section-header"><div class="detail-count">${headerText}</div><button class="btn-add-item" onclick="openAddDecision()">+ Add new decision</button></div>`;
+  const total = keyDecisions.length;
+  const approved = keyDecisions.filter(i => approvalState['decision-'+i.id]).length;
+  let html = `<div class="approval-progress"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>${approved} of ${total} decisions approved</span><div class="approval-progress-bar"><div class="approval-progress-fill" style="width:${(approved/total)*100}%"></div></div></div>`;
+  html += `<div class="detail-section-header"><div class="detail-count">${headerText}</div><button class="btn-add-item" onclick="openAddDecision()">+ Add new decision</button></div>`;
   html += '<div style="font-size:12px;font-weight:600;color:#6b7280;margin-bottom:8px;">Key decisions</div>';
   keyDecisions.forEach(item => {
-    html += `<div class="item-card">
+    const isApproved = approvalState['decision-'+item.id];
+    const suggestions = [];
+    if (item.suggestedOwners && item.suggestedOwners.length) suggestions.push('Owners: ' + item.suggestedOwners.join(', '));
+    if (item.suggestedType && item.suggestedType.length) suggestions.push('Type: ' + item.suggestedType.join(', '));
+    const hasSuggestions = suggestions.length > 0;
+    const suggestionsHtml = hasSuggestions ? `<div class="suggested-banner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Suggested ${suggestions.join(' | ')} &mdash; <a href="#" onclick="openEditDecision('${item.id}');return false;" style="color:#92400e;font-weight:600;">Review &amp; update</a></div>` : '';
+    html += `<div class="item-card ${isApproved ? 'approved' : ''}">
       <div class="item-card-actions">
         <button class="action-icon" onclick="openEditDecision('${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
         <button class="action-icon" onclick="openDeleteItem('key decision', '${item.title.substring(0,50)}...')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
@@ -829,22 +888,36 @@ function renderKeyDecisionsSection(headerText) {
         <span class="item-id">ID: ${item.id}</span>
         <span class="badge badge-type">${item.type}</span>
       </div>
+      ${suggestionsHtml}
       <div class="item-card-title">${item.title}</div>
       <div class="item-card-desc">${item.desc}</div>
       <div class="item-card-meta">
         <span class="item-card-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Owners: ${item.owners}</span>
       </div>
       <div class="item-card-source"><span>Source:</span> "${item.source.substring(0,120)}..." <a href="#" class="read-more">Read more</a></div>
+      <div class="item-card-approve">
+        <input type="checkbox" class="approve-checkbox" id="approve-decision-${item.id}" ${isApproved ? 'checked' : ''} onchange="toggleApproval('decision-${item.id}')">
+        <label for="approve-decision-${item.id}" class="approve-label ${isApproved ? 'approved' : ''}">${isApproved ? 'Approved' : 'Approve this decision'}</label>
+      </div>
     </div>`;
   });
   return html;
 }
 
 function renderOpenQuestionsSection(headerText) {
-  let html = `<div class="detail-section-header"><div class="detail-count">${headerText}</div><button class="btn-add-item" onclick="openAddQuestion()">+ Add new question</button></div>`;
+  const total = openQuestions.length;
+  const approved = openQuestions.filter(i => approvalState['question-'+i.id]).length;
+  let html = `<div class="approval-progress"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>${approved} of ${total} questions approved</span><div class="approval-progress-bar"><div class="approval-progress-fill" style="width:${(approved/total)*100}%"></div></div></div>`;
+  html += `<div class="detail-section-header"><div class="detail-count">${headerText}</div><button class="btn-add-item" onclick="openAddQuestion()">+ Add new question</button></div>`;
   html += '<div style="font-size:12px;font-weight:600;color:#6b7280;margin-bottom:8px;">Open questions</div>';
   openQuestions.forEach(item => {
-    html += `<div class="item-card">
+    const isApproved = approvalState['question-'+item.id];
+    const suggestions = [];
+    if (item.suggestedOwners && item.suggestedOwners.length) suggestions.push('Owners: ' + item.suggestedOwners.join(', '));
+    if (item.suggestedStatus && item.suggestedStatus.length) suggestions.push('Status: ' + item.suggestedStatus.join(', '));
+    const hasSuggestions = suggestions.length > 0;
+    const suggestionsHtml = hasSuggestions ? `<div class="suggested-banner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Suggested ${suggestions.join(' | ')} &mdash; <a href="#" onclick="openEditQuestion('${item.id}');return false;" style="color:#92400e;font-weight:600;">Review &amp; update</a></div>` : '';
+    html += `<div class="item-card ${isApproved ? 'approved' : ''}">
       <div class="item-card-actions">
         <button class="action-icon" onclick="openEditQuestion('${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
         <button class="action-icon" onclick="openDeleteItem('open question', '${item.topic}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
@@ -853,6 +926,7 @@ function renderOpenQuestionsSection(headerText) {
         <span class="badge ${item.statusClass}">${item.status}</span>
         <span class="item-id">ID: ${item.id}</span>
       </div>
+      ${suggestionsHtml}
       <div class="item-card-title">${item.topic}</div>
       <div class="item-card-desc">${item.question}</div>
       <div class="item-card-meta">
@@ -862,6 +936,10 @@ function renderOpenQuestionsSection(headerText) {
         <span class="item-card-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> Raised by: ${item.raisedBy}</span>
       </div>
       <div class="item-card-source"><span>Source:</span> "${item.source.substring(0,120)}..." <a href="#" class="read-more">Read more</a></div>
+      <div class="item-card-approve">
+        <input type="checkbox" class="approve-checkbox" id="approve-question-${item.id}" ${isApproved ? 'checked' : ''} onchange="toggleApproval('question-${item.id}')">
+        <label for="approve-question-${item.id}" class="approve-label ${isApproved ? 'approved' : ''}">${isApproved ? 'Approved' : 'Approve this question'}</label>
+      </div>
     </div>`;
   });
   return html;
