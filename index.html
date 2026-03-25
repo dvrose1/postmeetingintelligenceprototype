@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assemble - Post Meeting Insights</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f6f8; color: #1a1a2e; font-size: 14px; line-height: 1.5; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; font-size: inherit; }
+input, select, textarea { font-family: inherit; font-size: inherit; }
+
+/* Layout */
+.app { display: flex; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar { width: 260px; background: #fff; border-right: 1px solid #e5e7eb; display: flex; flex-direction: column; flex-shrink: 0; padding: 20px 0; }
+.sidebar-brand { display: flex; align-items: center; gap: 12px; padding: 0 20px; margin-bottom: 24px; }
+.sidebar-brand-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #2563eb, #7c3aed); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 16px; }
+.sidebar-brand-text { font-weight: 600; font-size: 15px; }
+.sidebar-brand-sub { color: #6b7280; font-size: 12px; }
+.sidebar-section { padding: 0 12px; margin-bottom: 16px; }
+.sidebar-section-label { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; padding: 0 8px; margin-bottom: 4px; }
+.sidebar-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; color: #4b5563; font-size: 13px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+.sidebar-item:hover { background: #f3f4f6; }
+.sidebar-item.active { background: #eff6ff; color: #2563eb; }
+.sidebar-item-icon { width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; }
+.sidebar-item-icon svg { width: 16px; height: 16px; }
+
+/* Main content */
+.main { flex: 1; padding: 32px 40px; overflow-y: auto; position: relative; }
+.main-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; }
+.main-title-area {}
+.main-icon { width: 44px; height: 44px; background: #eff6ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+.main-icon svg { width: 22px; height: 22px; color: #2563eb; }
+.main-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.main-subtitle { color: #6b7280; font-size: 14px; }
+
+/* Upload button */
+.btn-upload { display: flex; align-items: center; gap: 8px; background: #2563eb; color: #fff; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 14px; transition: background 0.15s; }
+.btn-upload:hover { background: #1d4ed8; }
+.btn-upload svg { width: 16px; height: 16px; }
+
+/* Tables */
+.section-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+.table-wrapper { background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; margin-bottom: 32px; }
+.table { width: 100%; border-collapse: collapse; }
+.table th { text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 600; color: #6b7280; background: #f9fafb; border-bottom: 1px solid #e5e7eb; white-space: nowrap; }
+.table th .sort-arrow { margin-left: 4px; opacity: 0.4; }
+.table td { padding: 14px 16px; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+.table tr:last-child td { border-bottom: none; }
+.table tr:hover td { background: #f9fafb; }
+.meeting-title-cell { display: flex; align-items: center; gap: 10px; font-weight: 500; cursor: pointer; }
+.meeting-title-cell:hover { color: #2563eb; }
+.file-icon { width: 20px; height: 20px; color: #9ca3af; }
+.status-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; }
+.status-dot.needs-review { background: #ef4444; }
+.status-dot.reviewed { background: #22c55e; }
+.source-count { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; background: #f3f4f6; border-radius: 6px; font-size: 12px; font-weight: 600; padding: 0 6px; }
+.btn-review { background: #2563eb; color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 13px; white-space: nowrap; }
+.btn-review:hover { background: #1d4ed8; }
+.action-icons { display: flex; gap: 4px; }
+.action-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; color: #6b7280; transition: all 0.15s; }
+.action-icon:hover { background: #f3f4f6; color: #1a1a2e; }
+.action-icon svg { width: 16px; height: 16px; }
+
+/* Search */
+.search-bar { position: relative; width: 320px; margin-bottom: 16px; }
+.search-bar input { width: 100%; padding: 10px 16px 10px 38px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 14px; outline: none; }
+.search-bar input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.search-bar svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #9ca3af; }
+
+/* Table footer */
+.table-footer { padding: 12px 16px; color: #6b7280; font-size: 13px; border-top: 1px solid #f3f4f6; background: #f9fafb; }
+
+/* Toast */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; padding: 12px 20px; background: #065f46; color: #fff; border-radius: 10px; font-weight: 500; font-size: 14px; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.15); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.toast.show { opacity: 1; }
+.toast svg { width: 20px; height: 20px; color: #34d399; flex-shrink: 0; }
+
+/* Modal overlay */
+.modal-overlay { position: fixed; inset: 0; background: rgba(107,114,128,0.6); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+.modal-overlay.show { opacity: 1; pointer-events: auto; }
+
+/* Upload modal */
+.modal { background: #fff; border-radius: 16px; width: 90%; max-width: 560px; max-height: 85vh; overflow-y: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.15); }
+.modal-header { padding: 24px 24px 0; display: flex; justify-content: space-between; align-items: flex-start; }
+.modal-title { font-size: 18px; font-weight: 700; }
+.modal-desc { color: #6b7280; font-size: 13px; margin-top: 2px; }
+.modal-close { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: #6b7280; }
+.modal-close:hover { background: #f3f4f6; }
+.modal-body { padding: 20px 24px; }
+.modal-footer { padding: 16px 24px 24px; display: flex; justify-content: space-between; }
+
+/* Form elements */
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 6px; }
+.form-input { width: 100%; padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 8px; outline: none; font-size: 14px; }
+.form-input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.form-textarea { width: 100%; padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 8px; outline: none; font-size: 14px; resize: vertical; min-height: 80px; }
+.form-textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.form-select { padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 8px; outline: none; font-size: 14px; background: #fff; cursor: pointer; appearance: auto; }
+.form-select:focus { border-color: #2563eb; }
+
+/* Drop zone */
+.drop-zone { border: 2px dashed #d1d5db; border-radius: 12px; padding: 32px; text-align: center; margin-top: 8px; background: #f9fafb; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+.drop-zone:hover { border-color: #2563eb; background: #eff6ff; }
+.drop-zone-icon { margin-bottom: 8px; }
+.drop-zone-icon svg { width: 32px; height: 32px; color: #2563eb; }
+.drop-zone-text { font-size: 14px; color: #4b5563; }
+.drop-zone-text a { color: #2563eb; text-decoration: none; font-weight: 500; }
+.drop-zone-hint { font-size: 12px; color: #9ca3af; margin-top: 4px; }
+
+/* Selected files */
+.selected-files { margin-top: 20px; }
+.selected-files-title { font-weight: 600; font-size: 13px; margin-bottom: 10px; }
+.selected-file { display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: #f9fafb; border-radius: 10px; margin-bottom: 10px; position: relative; }
+.selected-file-icon { width: 32px; height: 32px; background: #e5e7eb; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.selected-file-icon svg { width: 16px; height: 16px; color: #6b7280; }
+.selected-file-info { flex: 1; }
+.selected-file-name { font-weight: 500; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px; }
+.selected-file-size { font-size: 12px; color: #2563eb; }
+.selected-file-remove { position: absolute; right: 12px; top: 12px; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; color: #9ca3af; border-radius: 4px; }
+.selected-file-remove:hover { color: #ef4444; }
+
+/* Tags */
+.tags-row { margin-top: 8px; }
+.tag-select { padding: 6px 10px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 12px; background: #fff; }
+.tags-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; background: #f3f4f6; border-radius: 4px; font-size: 12px; color: #4b5563; }
+.tag-remove { cursor: pointer; color: #9ca3af; font-size: 14px; line-height: 1; }
+
+/* Buttons */
+.btn-primary { background: #2563eb; color: #fff; padding: 10px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-secondary { background: #fff; color: #4b5563; padding: 10px 24px; border-radius: 8px; font-weight: 500; font-size: 14px; border: 1px solid #e5e7eb; }
+.btn-secondary:hover { background: #f3f4f6; }
+.btn-danger { background: #f97316; color: #fff; padding: 10px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; }
+.btn-danger:hover { background: #ea580c; }
+.btn-danger-outline { color: #4b5563; font-weight: 500; font-size: 14px; }
+.btn-danger-outline:hover { color: #ef4444; }
+.btn-red { background: #ef4444; color: #fff; padding: 10px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; }
+.btn-red:hover { background: #dc2626; }
+
+/* Detail panel */
+.detail-overlay { position: fixed; inset: 0; background: rgba(107,114,128,0.5); z-index: 90; display: flex; justify-content: center; align-items: flex-start; padding-top: 40px; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+.detail-overlay.show { opacity: 1; pointer-events: auto; }
+.detail-panel { background: #fff; border-radius: 16px; width: 95%; max-width: 720px; max-height: calc(100vh - 80px); display: flex; flex-direction: column; box-shadow: 0 25px 50px rgba(0,0,0,0.15); }
+.detail-header { padding: 24px 24px 0; flex-shrink: 0; }
+.detail-header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.detail-header-actions { display: flex; gap: 4px; }
+.detail-title { font-size: 18px; font-weight: 700; text-align: center; }
+.detail-meta { display: flex; gap: 16px; justify-content: center; color: #6b7280; font-size: 13px; margin-top: 4px; margin-bottom: 16px; }
+.detail-meta-item { display: flex; align-items: center; gap: 4px; }
+
+/* Tabs */
+.tabs { display: flex; gap: 0; border-bottom: 2px solid #e5e7eb; }
+.tab { padding: 10px 16px; font-size: 14px; font-weight: 500; color: #6b7280; border-bottom: 2px solid transparent; margin-bottom: -2px; cursor: pointer; white-space: nowrap; }
+.tab:hover { color: #1a1a2e; }
+.tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+
+/* Detail body */
+.detail-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
+.detail-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.detail-count { font-size: 16px; font-weight: 700; }
+.btn-add-item { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: #4b5563; padding: 6px 12px; border-radius: 6px; border: 1px solid #e5e7eb; }
+.btn-add-item:hover { background: #f3f4f6; }
+
+/* Item cards */
+.item-card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-bottom: 12px; position: relative; transition: box-shadow 0.15s; }
+.item-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.item-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.item-card-actions { position: absolute; top: 16px; right: 16px; display: flex; gap: 2px; }
+.item-card-actions .action-icon { width: 28px; height: 28px; }
+
+/* Priority/status badges */
+.badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+.badge-high { background: #fef2f2; color: #dc2626; }
+.badge-medium { background: #fef9c3; color: #a16207; }
+.badge-low { background: #f0fdf4; color: #16a34a; }
+.badge-confidence { background: #dcfce7; color: #16a34a; font-size: 12px; padding: 2px 8px; border-radius: 10px; }
+.badge-type { background: #f3f4f6; color: #4b5563; font-size: 11px; padding: 2px 8px; border-radius: 4px; }
+.badge-status-follow { background: #dbeafe; color: #2563eb; font-size: 11px; padding: 2px 8px; border-radius: 4px; }
+.badge-status-investigation { background: #fce7f3; color: #be185d; font-size: 11px; padding: 2px 8px; border-radius: 4px; }
+.badge-status-debate { background: #fef3c7; color: #92400e; font-size: 11px; padding: 2px 8px; border-radius: 4px; }
+.badge-status-deferred { background: #f3e8ff; color: #7c3aed; font-size: 11px; padding: 2px 8px; border-radius: 4px; }
+.item-id { color: #9ca3af; font-size: 12px; font-weight: 500; }
+
+.item-card-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; padding-right: 60px; }
+.item-card-desc { color: #4b5563; font-size: 13px; margin-bottom: 10px; padding-right: 60px; }
+.item-card-meta { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: #6b7280; margin-bottom: 10px; }
+.item-card-meta-item { display: flex; align-items: flex-start; gap: 4px; }
+.item-card-meta-item svg { width: 14px; height: 14px; margin-top: 1px; flex-shrink: 0; }
+.item-card-source { background: #f3f4f6; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: #6b7280; line-height: 1.5; }
+.item-card-source span { font-weight: 500; color: #4b5563; }
+.read-more { color: #2563eb; text-decoration: none; font-weight: 500; font-size: 12px; }
+
+/* Detail footer */
+.detail-footer { padding: 16px 24px; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-between; flex-shrink: 0; }
+
+/* Knowledge banner */
+.knowledge-banner { background: #f9fafb; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #6b7280; display: flex; align-items: flex-start; gap: 8px; margin-top: 16px; }
+.knowledge-banner svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; color: #f59e0b; }
+
+/* Suggested chips */
+.suggested-chips { margin-top: 6px; margin-bottom: 12px; }
+.suggested-label { font-size: 12px; font-weight: 600; color: #4b5563; margin-bottom: 4px; }
+.chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; background: #2563eb; color: #fff; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; margin-right: 6px; }
+.chip:hover { background: #1d4ed8; }
+
+/* Owner tags */
+.owner-tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 12px; color: #2563eb; }
+.owner-tag .tag-remove { color: #60a5fa; }
+
+/* Confirmation modal */
+.confirm-modal { max-width: 420px; }
+.confirm-modal .modal-body { padding: 16px 24px; }
+.confirm-modal .modal-body p { color: #6b7280; font-size: 14px; }
+
+/* Generating overlay */
+.generating-overlay { position: fixed; inset: 0; background: rgba(107,114,128,0.7); z-index: 200; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.generating-overlay.show { opacity: 1; pointer-events: auto; }
+.spinner { width: 40px; height: 40px; border: 3px solid #e5e7eb; border-top-color: #2563eb; border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.generating-text { color: #fff; font-weight: 600; font-size: 16px; }
+
+/* Intercom-style button */
+.intercom-btn { position: fixed; bottom: 24px; right: 24px; width: 48px; height: 48px; background: #1a1a2e; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 50; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">A</div>
+      <div>
+        <div class="sidebar-brand-text">Unilever</div>
+        <div class="sidebar-brand-sub">Maximilian Metti</div>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Actions</div>
+      <div class="sidebar-item"><div class="sidebar-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>New question</div>
+      <div class="sidebar-item"><div class="sidebar-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>Chief of Staff</div>
+      <div class="sidebar-item"><div class="sidebar-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>Reports</div>
+      <div class="sidebar-item active"><div class="sidebar-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>Post meeting insights</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Intelligence</div>
+      <div class="sidebar-item"><div class="sidebar-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>Knowledge</div>
+      <div class="sidebar-item"><div class="sidebar-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>Controls</div>
+      <div class="sidebar-item"><div class="sidebar-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>Wisdom</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Starred</div>
+      <div class="sidebar-item" style="font-size:12px;">CRM/Marketing automation spend...</div>
+      <div class="sidebar-item" style="font-size:12px;">Klaviyo vs Braze MAU comparison</div>
+      <div class="sidebar-item" style="font-size:12px;">CRM/Marketing automation spend...</div>
+      <div class="sidebar-item" style="font-size:12px;">Daily insights for Dove skincare bra...</div>
+      <div class="sidebar-item" style="font-size:12px;">Klaviyo vs Braze MAU comparison</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Recents</div>
+      <div class="sidebar-item" style="font-size:12px;">Agentic S&OP prototype</div>
+      <div class="sidebar-item" style="font-size:12px;">Assemble Demo generation</div>
+      <div class="sidebar-item" style="font-size:12px;">ABI x Unilever</div>
+      <div class="sidebar-item" style="font-size:12px;">Assemble Projects Documentation...</div>
+      <div class="sidebar-item" style="font-size:12px;">AstraZeneca account summary</div>
+      <div class="sidebar-item" style="font-size:12px;">Revlon AI workflow transformation</div>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <div class="main" id="mainContent">
+    <div class="main-header">
+      <div class="main-title-area">
+        <div class="main-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <h1 class="main-title">Post meeting insights</h1>
+        <p class="main-subtitle">Manage post-meeting insights, action items and open questions.</p>
+      </div>
+      <button class="btn-upload" onclick="openUploadModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload transcription
+      </button>
+    </div>
+
+    <!-- Needs review section -->
+    <div class="section-title">Needs review</div>
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Meeting title <span class="sort-arrow">&#9662;</span></th>
+            <th>Meeting date <span class="sort-arrow">&#9652;</span></th>
+            <th>Insights status <span class="sort-arrow">&#9662;</span></th>
+            <th>Source files <span class="sort-arrow">&#9662;</span></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="meeting-title-cell" onclick="openReviewFlow()"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Feb MPR transcript</div></td>
+            <td>Feb 9, 2026</td>
+            <td><span class="status-badge"><span class="status-dot needs-review"></span>Needs review</span></td>
+            <td><span class="source-count">2</span></td>
+            <td><button class="btn-review" onclick="openReviewFlow()">Review insights</button></td>
+          </tr>
+          <tr>
+            <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>January MPR transcript</div></td>
+            <td>Jan 23, 2026</td>
+            <td><span class="status-badge"><span class="status-dot needs-review"></span>Needs review</span></td>
+            <td><span class="source-count">1</span></td>
+            <td><button class="btn-review">Review insights</button></td>
+          </tr>
+          <tr>
+            <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Jan MPR transcript</div></td>
+            <td>Jan 9, 2026</td>
+            <td><span class="status-badge"><span class="status-dot needs-review"></span>Needs review</span></td>
+            <td><span class="source-count">1</span></td>
+            <td><button class="btn-review">Review insights</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Post meeting insights section -->
+    <div class="section-title">Post meeting insights</div>
+    <div class="search-bar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Search insights...">
+    </div>
+    <div class="table-wrapper" id="insightsTable">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Meeting title <span class="sort-arrow">&#9662;</span></th>
+            <th>Meeting date <span class="sort-arrow">&#9662;</span></th>
+            <th>Insights status <span class="sort-arrow">&#9662;</span></th>
+            <th>Source files <span class="sort-arrow">&#9662;</span></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="insightsBody">
+          <tr>
+            <td><div class="meeting-title-cell" onclick="openDetailView('March MPR meeting+review')"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>March MPR meeting+review</div></td>
+            <td>Mar 9, 2026</td>
+            <td><span class="status-badge"><span class="status-dot reviewed"></span>Reviewed</span></td>
+            <td><span class="source-count">1</span></td>
+            <td><div class="action-icons">
+              <button class="action-icon" onclick="openDetailView('March MPR meeting+review')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              <button class="action-icon" onclick="openDeleteInsights()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+            </div></td>
+          </tr>
+          <tr>
+            <td><div class="meeting-title-cell" onclick="openDetailView('March mpr')"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>March mpr</div></td>
+            <td>Mar 9, 2026</td>
+            <td><span class="status-badge"><span class="status-dot reviewed"></span>Reviewed</span></td>
+            <td><span class="source-count">1</span></td>
+            <td><div class="action-icons">
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+            </div></td>
+          </tr>
+          <tr>
+            <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Feb MPR transcript</div></td>
+            <td>Feb 23, 2026</td>
+            <td><span class="status-badge"><span class="status-dot needs-review"></span>Needs review</span></td>
+            <td><span class="source-count">2</span></td>
+            <td><div class="action-icons">
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+            </div></td>
+          </tr>
+          <tr>
+            <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Feb MPR transcript - 2</div></td>
+            <td>Feb 9, 2026</td>
+            <td><span class="status-badge"><span class="status-dot reviewed"></span>Reviewed</span></td>
+            <td><span class="source-count">1</span></td>
+            <td><div class="action-icons">
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+            </div></td>
+          </tr>
+          <tr>
+            <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>January MPR transcript</div></td>
+            <td>Jan 23, 2026</td>
+            <td><span class="status-badge"><span class="status-dot needs-review"></span>Needs review</span></td>
+            <td><span class="source-count">1</span></td>
+            <td><div class="action-icons">
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+            </div></td>
+          </tr>
+          <tr>
+            <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Jan MPR transcript</div></td>
+            <td>Jan 9, 2026</td>
+            <td><span class="status-badge"><span class="status-dot needs-review"></span>Needs review</span></td>
+            <td><span class="source-count">1</span></td>
+            <td><div class="action-icons">
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+            </div></td>
+          </tr>
+          <tr>
+            <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>dec MPR</div></td>
+            <td>Dec 23, 2025</td>
+            <td><span class="status-badge"><span class="status-dot reviewed"></span>Reviewed</span></td>
+            <td><span class="source-count">3</span></td>
+            <td><div class="action-icons">
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+            </div></td>
+          </tr>
+          <tr>
+            <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>dec MPR</div></td>
+            <td>Dec 9, 2025</td>
+            <td><span class="status-badge"><span class="status-dot reviewed"></span>Reviewed</span></td>
+            <td><span class="source-count">1</span></td>
+            <td><div class="action-icons">
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+            </div></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="table-footer">8 Meetings | 5 Reviewed insights | 3 Needed review</div>
+    </div>
+  </div>
+</div>
+
+<!-- Intercom button -->
+<div class="intercom-btn">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+  <span id="toastText"></span>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal-overlay" id="uploadModal">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Upload meeting transcription</div>
+        <div class="modal-desc">Add transcripts, notes, and documents to generate insights.</div>
+      </div>
+      <button class="modal-close" onclick="closeUploadModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Meeting title</label>
+        <input class="form-input" id="meetingTitle" placeholder="Q1 Brand review..." value="">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Meeting date</label>
+        <select class="form-select" id="meetingDate">
+          <option value="">Pick a date</option>
+          <option value="2026-03-25">March 25, 2026</option>
+          <option value="2026-03-11" selected>March 11, 2026</option>
+          <option value="2026-03-09">March 9, 2026</option>
+          <option value="2026-02-23">February 23, 2026</option>
+        </select>
+      </div>
+      <div class="drop-zone" id="dropZone" onclick="simulateFileUpload()">
+        <div class="drop-zone-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </div>
+        <div class="drop-zone-text">Drag and drop or <a href="#">Choose files</a> to upload</div>
+        <div class="drop-zone-hint">Max 10Mb each. 21 supported file types</div>
+      </div>
+      <div class="selected-files" id="selectedFiles" style="display:none;">
+        <div class="selected-files-title">Selected files</div>
+        <div class="selected-file">
+          <div class="selected-file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div class="selected-file-info">
+            <div class="selected-file-name">DM+C DEO & SCL - E2E Media Perfor...txt</div>
+            <div class="selected-file-size">800Kb</div>
+            <div class="tags-row">
+              <select class="tag-select"><option>Selected tags 2</option></select>
+              <div class="tags-list"><span class="tag">Unilever <span class="tag-remove">&times;</span></span><span class="tag">RROI 2025 <span class="tag-remove">&times;</span></span></div>
+            </div>
+          </div>
+          <button class="selected-file-remove">&times;</button>
+        </div>
+        <div class="selected-file">
+          <div class="selected-file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+          <div class="selected-file-info">
+            <div class="selected-file-name">chart-234-1771215780364.png</div>
+            <div class="selected-file-size">521Kb</div>
+            <div class="tags-row">
+              <select class="tag-select"><option>Selected tags 1</option></select>
+              <div class="tags-list"><span class="tag">Unilever <span class="tag-remove">&times;</span></span></div>
+            </div>
+          </div>
+          <button class="selected-file-remove">&times;</button>
+        </div>
+        <div class="selected-file">
+          <div class="selected-file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div class="selected-file-info">
+            <div class="selected-file-name">data.json</div>
+            <div class="selected-file-size">50Kb</div>
+            <div class="tags-row">
+              <select class="tag-select"><option>Selected tags 5</option></select>
+              <div class="tags-list"><span class="tag">Unilever <span class="tag-remove">&times;</span></span><span class="tag">RROI 2025 <span class="tag-remove">&times;</span></span><span class="tag">RROI 2026 <span class="tag-remove">&times;</span></span></div>
+            </div>
+          </div>
+          <button class="selected-file-remove">&times;</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeUploadModal()">Cancel</button>
+      <button class="btn-primary" id="generateBtn" onclick="generateInsights()">Generate insights</button>
+    </div>
+  </div>
+</div>
+
+<!-- Generating overlay -->
+<div class="generating-overlay" id="generatingOverlay">
+  <div class="spinner"></div>
+  <div class="generating-text">Generating insights...</div>
+</div>
+
+<!-- Detail View / Review Flow -->
+<div class="detail-overlay" id="detailOverlay">
+  <div class="detail-panel">
+    <div class="detail-header">
+      <div class="detail-header-top">
+        <div style="width:60px"></div>
+        <div></div>
+        <div class="detail-header-actions">
+          <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
+          <button class="action-icon" onclick="closeDetail()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        </div>
+      </div>
+      <div class="detail-title" id="detailTitle">March MPR meeting, team review</div>
+      <div class="detail-meta">
+        <span class="detail-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> March 11, 2026</span>
+        <span class="detail-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> 2 source files</span>
+      </div>
+      <div class="tabs" id="detailTabs">
+        <div class="tab active" data-tab="actions" onclick="switchTab('actions')">Action items (10)</div>
+        <div class="tab" data-tab="decisions" onclick="switchTab('decisions')">Key decisions (7)</div>
+        <div class="tab" data-tab="questions" onclick="switchTab('questions')">Open questions (9)</div>
+      </div>
+    </div>
+    <div class="detail-body" id="detailBody"></div>
+    <div class="detail-footer" id="detailFooter"></div>
+  </div>
+</div>
+
+<!-- Generic Confirmation Modal -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal confirm-modal">
+    <div class="modal-header">
+      <div class="modal-title" id="confirmTitle">Delete insights</div>
+      <button class="modal-close" onclick="closeConfirmModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p id="confirmMessage"></p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeConfirmModal()">Cancel</button>
+      <button class="btn-danger" id="confirmAction" onclick="executeConfirmAction()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Item Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal" style="max-width:560px;" id="editModalContent"></div>
+</div>
+
+<!-- Add Item Modal -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal" style="max-width:560px;" id="addModalContent"></div>
+</div>
+
+<script>
+// ============ DATA ============
+const actionItems = [
+  { id: 'AI-002', priority: 'High', title: 'Fix Bridgerton campaign data and share corrected slide', desc: 'Revise the Bridgerton campaign slide to correct the data fumble and share the accurate numbers in the next shareout.', owners: 'Stephanie Zhang, Stephanie Shamrock, Kathryn Fernandez', due: 'Next MPR', source: 'So I think in the next refreshes we definitely have some room to. Optimize the OSE mix in the base campaign, but we know that in TikTok ToTok and this is where TikTok TikTok actually happened. The OSE worked really well for us for TikTok ToTok and the next one that should be coming. I think Lauren youre confirming when well get that...' },
+  { id: 'AI-003', priority: 'High', title: 'Optimize and report on OSE asset mix for Crumble', desc: 'Review and optimize the OSE (Other Say) asset mix for the Crumble campaign, focusing on improving performance and featuring the new Key Lime variant in the March TikTok Top Feed.', owners: 'Stephanie Zhang, Lauren Baker', due: 'March 2026', source: 'I will fix the slide for the Bridgerton cause that was a big fumble, but I will give you the correct numbers.' },
+  { id: 'AI-006', priority: 'High', title: 'Implement end-to-end sales tracking for Costco campaign', desc: 'Coordinate with the Costco sales team to obtain weekly sales numbers and align them with campaign flight dates, providing an end-to-end view of campaign impact for the Devour initiative.', owners: 'Stephanie Zhang, Michelle Wen, Kathryn Shamrock', due: 'During Devour campaign flight (March-April 2026) or Before next MPR', source: 'So I think for Devour, the Costco initiative that we have this year, well try to bring more of that end to end view by getti...' },
+  { id: 'AI-007', priority: 'High', title: 'Deliver Meta and channel-by-channel ROI breakdown', desc: 'Provide a detailed breakdown of Meta ROI performance, specifically for the core body wash and new Costco campaigns, as well as a channel-by-channel TikTok, YouTube, Pinterest to inform platform allocation decisions for upcoming campaigns.', owners: 'Stephanie Zhang, Michelle Wen, Emma Bacon, Kathryn Shamrock', due: 'Before next MPR', source: 'Yeah, I can give you that breakdown, uh, is the follow up. But Speaking of Costco, I think this is where this, this slide is th...' },
+  { id: 'AI-008', priority: 'High', title: 'Ramp Up Walmart auto campaigns and test brand term negation', desc: 'Increase investment in Walmart auto campaigns for the Key Lime launch to accelerate relevancy and ramp up sales, test the impact of negating brand terms, and consider auto campaign to maintain brand support for innovation.', owners: 'Danielle Benson, Walmart team', due: 'ASAP, before next MPR', source: 'So were going to put some extra juice behind auto campaigns to make sure were getting the relevancy up as soon as pos...' },
+  { id: 'AI-011', priority: 'High', title: 'Summarize Target optimization recommendations and pause lowest performing SKU', desc: 'Summarize and share optimization recommendations for Target retail media, including expected outcomes and volume impact, lowest performing organic SKU in Target display campaigns to improve overall efficiency.', owners: 'Henry Chen, Kathryn Shamrock', due: 'Before next MPR; pause SKU by March 6, 2026 or This week (by March 6, 2026)', source: 'If you could just summarize where you think we have opportunity to optimize and what you will get out of it, that...' },
+  { id: 'AI-031', priority: 'Medium', title: 'Leverage Google ABC reports and request top YouTube opportunities', desc: 'Utilize Googles ABC reports and best practice checklists to benchmark Doves YouTube content, and engage Google to provide Dove-specific top three opportunities for YouTube channel optimization.', owners: 'Stephanie Zhang, Amanda Schneider', due: 'Before next MPR', source: 'Theres a checklist of like best practices and and uh creative elements that they, Reviews drive really strong performance...' },
+  { id: 'AI-034', priority: 'Medium', title: 'Audit bar Street Fight impact on Walmart sales', desc: 'Conduct an audit to assess the impact of the bar street fight on Walmart sales and share findings with the team.', owners: 'Danielle Benson, Kathryn Shamrock, team', due: 'Before next MPR', source: 'we know that we executed the incremental from the bar street fight, So were working on an audit right now to see how th...' },
+  { id: 'AI-035', priority: 'Medium', title: 'Provide new-to-brand metrics for Target display', desc: 'Provide new-to-brand metrics for Target display campaigns after the campaign or at mid-end of flight, focusing on audience targeting effectiveness.', owners: 'Henry Chen, Kathryn Shamrock', due: 'Mid-flight or end of flight (TBD)', source: 'But to get that metric, I wont get that until mid flight or end of flight. Ill follow up once I have the metric.' },
+  { id: 'AI-036', priority: 'Medium', title: 'Advance creative reporting granularity', desc: 'Organize a huddle to discuss and implement more granular creative reporting and analysis for future sessions to capture deeper optimization learnings.', owners: 'Stephanie Zhang, Tatiana, Jillian', due: 'Before next MPR', source: 'I do want to huddle a little bit on how to bring more of the creative reporting forward because I obviously like for this...' }
+];
+
+const keyDecisions = [
+  { id: 'D-001', confidence: '90%', type: 'Fix critical', title: 'Pause the lowest performing organic SKU (Rostaria) in Target search to improve overall efficiency', desc: 'Rostaria has the lowest clicks and performance among creative assets. The team recommends pausing it to focus on higher-performing SKUs.', owners: 'Henry Chen', source: 'So the team recommends to pause the lowest performing organic SKU list area. If you guys agree, we can execute this week.' },
+  { id: 'D-002', confidence: '90%', type: 'Change strategy', title: 'Shift retail media dollars at Target from The Trade Desk and online Target.com to higher-performing tactics TikTok and YouTube', desc: "Target's best converting placements are TikTok and YouTube, while CPMs are high on other platforms. The team will reallocate spend to maximize efficiency and conversion.", owners: 'Henry Chen', source: 'So thats why from a next step optimization perspective, we are going to shift some dollars from the trade desk and onli...' },
+  { id: 'D-003', confidence: '85%', type: 'Defer action', title: 'Defer implementation of product line separation for limited editions (e.g., Bridgerton, Crumble) until at least Q2 or Q3 2026', desc: 'The team acknowledges the need for more granular reporting by limited edition but confirms that the new model breakout will not be available until Q2 or Q3 2026, impacting planning cycles.', owners: 'Stephanie Zhang', source: 'So the team recommends to pause the lowest performing organic SKU list area. If you guys agree, we can execute this week.' },
+  { id: 'D-004', confidence: '85%', type: 'Change strategy', title: 'Diversify digital social investment for limited edition campaigns (Crumble, Bridgerton) beyond Meta and TikTok to include Pinterest, Reddit, and Snap', desc: 'Meta and TikTok underperformed for mixed product type campaigns, while Pinterest performed well. The team agrees to diversify the mix in 2026 to improve digital social performance.', owners: 'Stephanie Zhang', source: 'So the team recommends to pause the lowest performing organic SKU list area. If you guys agree, we can execute this week.' },
+  { id: 'D-005', confidence: '90%', type: 'Fix critical', title: 'Align national media campaign messaging with retailer promotions (e.g., Costco) to maximize impact and avoid missed opportunities', desc: "A disconnect between national media campaign messaging and Costco's in-store promo led to poor ROI and missed sales lift. The team agrees future campaigns must synchronize messaging and timing with retailer promos.", owners: 'Stephanie Zhang, Michelle Wen', source: 'And so I I think the timing wise I like this was definitely a missed opportunity to really drive. Like, hey, we knew this p...' },
+  { id: 'D-006', confidence: '65%', type: 'Confirm approach', title: 'Increase investment in the new Costco campaign to $1M, focusing on boosting baseline sales rather than relying on promo-driven spikes', desc: "Last year's $30K spend failed to drive sustained sales. This year, a $1M investment is intended to boost baseline sales, with learnings from previous campaigns applied to maximize impact.", owners: 'Michelle Wen, Jayme Jansky', source: 'Well, I will just say your campaign this year is gonna be youre spending way more money. You have a like $1,000,000 set...' },
+  { id: 'D-007', confidence: '50%', type: 'Test experiment', title: 'Test negating brand terms within Walmart auto search campaigns to improve efficiency, and consider creating a separate auto campaign for brand support', desc: 'The team is currently testing the impact of negating brand terms in auto campaigns, as this could improve efficiency. They are also considering a parallel auto campaign to maintain brand support for innovation.', owners: 'Danielle Benson', source: 'So great question. We have negatives right now that are happening in auto. And so a big conversation with the team...' }
+];
+
+const openQuestions = [
+  { id: 'OQ-001', status: 'Follow up required', statusClass: 'badge-status-follow', topic: 'Limited edition breakout timing', question: 'When will the product line data be separated for limited editions, and when will that information be available for planning?', owners: 'Stephanie Zhang', raisedBy: 'Kathryn Shamrock', source: 'When did you say youll have the product line separated between the limited editions? Will that happen for 26?' },
+  { id: 'OQ-002', status: 'Follow up required', statusClass: 'badge-status-follow', topic: 'Meta ROI breakdown', question: 'What is the exact ROI for Meta in the recent campaigns, and how does it compare to other platforms?', owners: 'Stephanie Zhang', raisedBy: 'Michelle Wen', source: 'It should be. Ill get back to you, but it shouldnt be too far off. Its definitely not under a dollar. I can tell you that its at ma...' },
+  { id: 'OQ-003', status: 'Data investigation', statusClass: 'badge-status-investigation', topic: 'Conversion rate analysis', question: 'How are we performing with conversion rates for Crumble versus last year, and is conversion an opportunity for optimization?', owners: 'Danielle Benson', raisedBy: 'Kathryn Shamrock', source: 'It should be. Ill get back to you, but it shouldnt be too far off. Its definitely not under a dollar. I can tell you that its at ma...' },
+  { id: 'OQ-004', status: 'Data investigation', statusClass: 'badge-status-investigation', topic: 'Costco campaign attribution', question: 'Is there any way to bring more attribution for in-store demand at Costco, and can we have a more end-to-end view of campaign impact?', owners: 'Stephanie Zhang', raisedBy: 'Stephanie Zhang', source: 'But what kind of indicators do we have connected to in store velocity on Costco? Like how are we, how will we be able? I...' },
+  { id: 'OQ-005', status: 'Strategic debate', statusClass: 'badge-status-debate', topic: 'Plan B for Costco campaign', question: 'What is our Plan B if the $1M Costco campaign does not achieve the required sales threshold?', owners: 'Kathryn Shamrock', raisedBy: 'Kathryn Shamrock', source: "I'm just worried. I want us to have. I don't know what our Plan B is yet if it's not working with the million that we're spending..." },
+  { id: 'OQ-006', status: 'Strategic debate', statusClass: 'badge-status-debate', topic: 'OSE content optimization', question: 'How can we optimize the OSE (Other Say) content mix in the Crumble base campaign to improve performance, given that current OSE is underperforming compared to last year?', owners: 'Lauren Baker, Lauren (OSE lead)', raisedBy: 'Stephanie Zhang', source: 'I think in the next refreshes we definitely have some room to. Optimize the OSE mix in the base campaign, but we know t...' },
+  { id: 'OQ-007', status: 'Deferred', statusClass: 'badge-status-deferred', topic: 'Creative reporting granularity', question: 'How can we bring more granular creative reporting and analysis forward in future sessions to capture deeper optimization learnings?', owners: 'Stephanie Zhang', raisedBy: 'Stephanie Zhang', source: 'I do want to huddle a little bit on how to bring more of the creative reporting forward because I obviously like for this...' },
+  { id: 'OQ-008', status: 'Data investigation', statusClass: 'badge-status-investigation', topic: 'Conversion optimization learnings', question: "What are the learnings that could help optimize conversion if we're driving so much traffic to PDPs, and where are we green, yellow, red in terms of conversion performance?", owners: 'Danielle Benson', raisedBy: 'Kathryn Shamrock', source: "I'm also curious too. So Kathryn put a question in the chat about are there learnings that we could use to optimize con..." },
+  { id: 'OQ-009', status: 'Data investigation', statusClass: 'badge-status-investigation', topic: 'Optimization recommendations and expected outcomes', question: 'What are the specific optimization recommendations for Target, and what is the expected outcome in terms of additional volume driven?', owners: 'Henry Chen', raisedBy: 'Kathryn Shamrock', source: 'what are the optimization recommendations? I know you put that somewhere here, but just so we can have it quick and...' }
+];
+
+// ============ STATE ============
+let currentTab = 'actions';
+let isReviewMode = false;
+let reviewStep = 0; // 0=actions, 1=decisions, 2=questions
+let confirmCallback = null;
+
+// ============ FUNCTIONS ============
+
+function showToast(text) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toastText').textContent = text;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// Upload modal
+function openUploadModal() {
+  document.getElementById('uploadModal').classList.add('show');
+  document.getElementById('selectedFiles').style.display = 'none';
+  document.getElementById('meetingTitle').value = '';
+}
+function closeUploadModal() {
+  document.getElementById('uploadModal').classList.remove('show');
+}
+function simulateFileUpload() {
+  document.getElementById('selectedFiles').style.display = 'block';
+  document.getElementById('meetingTitle').value = 'March MPR meeting, team review';
+}
+function generateInsights() {
+  closeUploadModal();
+  document.getElementById('generatingOverlay').classList.add('show');
+  setTimeout(() => {
+    document.getElementById('generatingOverlay').classList.remove('show');
+    openReviewFlow();
+  }, 2000);
+}
+
+// Review flow
+function openReviewFlow() {
+  isReviewMode = true;
+  reviewStep = 0;
+  document.getElementById('detailOverlay').classList.add('show');
+  renderReviewStep();
+}
+
+function renderReviewStep() {
+  const tabs = document.getElementById('detailTabs');
+  const body = document.getElementById('detailBody');
+  const footer = document.getElementById('detailFooter');
+  document.getElementById('detailTitle').textContent = 'March MPR meeting, team review';
+
+  if (isReviewMode) {
+    // Hide tabs in review mode, show step-specific content
+    tabs.style.display = 'none';
+    if (reviewStep === 0) {
+      body.innerHTML = renderActionItemsSection('10 Action items generated');
+      footer.innerHTML = `<div></div><button class="btn-primary" onclick="nextReviewStep()">Next: Key decisions</button>`;
+    } else if (reviewStep === 1) {
+      body.innerHTML = renderKeyDecisionsSection('7 Key decisions generated') +
+        '<div class="knowledge-banner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>The uploaded files have been incorporated into the Knowledge database and will enhance data accuracy through analytics reference.</div>';
+      footer.innerHTML = `<button class="btn-secondary" onclick="prevReviewStep()">Back to items</button><button class="btn-primary" onclick="nextReviewStep()">Next: Open questions</button>`;
+    } else if (reviewStep === 2) {
+      body.innerHTML = renderOpenQuestionsSection('9 Open questions generated') +
+        '<div class="knowledge-banner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>The uploaded files have been incorporated into the Knowledge database and will enhance data accuracy through analytics reference.</div>';
+      footer.innerHTML = `<button class="btn-secondary" onclick="prevReviewStep()">Back to decisions</button><button class="btn-primary" onclick="confirmInsights()">Confirm insights</button>`;
+    }
+  }
+}
+
+function nextReviewStep() {
+  reviewStep++;
+  renderReviewStep();
+  document.getElementById('detailBody').scrollTop = 0;
+}
+function prevReviewStep() {
+  reviewStep--;
+  renderReviewStep();
+  document.getElementById('detailBody').scrollTop = 0;
+}
+function confirmInsights() {
+  closeDetail();
+  showToast('The insights have been uploaded and reviewed.');
+}
+
+// Detail view (post-review)
+function openDetailView(title) {
+  isReviewMode = false;
+  currentTab = 'actions';
+  document.getElementById('detailOverlay').classList.add('show');
+  document.getElementById('detailTitle').textContent = 'March MPR meeting, team review';
+  document.getElementById('detailTabs').style.display = 'flex';
+  renderDetailTab();
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+  renderDetailTab();
+  document.getElementById('detailBody').scrollTop = 0;
+}
+
+function renderDetailTab() {
+  const body = document.getElementById('detailBody');
+  const footer = document.getElementById('detailFooter');
+
+  if (currentTab === 'actions') {
+    body.innerHTML = renderActionItemsSection('10 Action items');
+    footer.innerHTML = `<button class="btn-danger-outline" onclick="openDeleteInsightsFromDetail()">Delete</button><button class="btn-primary" style="background:#ef4444;" onclick="closeDetail()">Download insights</button>`;
+  } else if (currentTab === 'decisions') {
+    body.innerHTML = renderKeyDecisionsSection('7 Key decisions');
+    footer.innerHTML = `<button class="btn-danger-outline" onclick="openDeleteInsightsFromDetail()">Delete</button><button class="btn-primary" style="background:#ef4444;" onclick="closeDetail()">Download insights</button>`;
+  } else if (currentTab === 'questions') {
+    body.innerHTML = renderOpenQuestionsSection('9 Open questions');
+    footer.innerHTML = `<button class="btn-danger-outline" onclick="openDeleteInsightsFromDetail()">Delete</button><button class="btn-primary" style="background:#ef4444;" onclick="closeDetail()">Download insights</button>`;
+  }
+}
+
+function closeDetail() {
+  document.getElementById('detailOverlay').classList.remove('show');
+  isReviewMode = false;
+}
+
+// ============ RENDER SECTIONS ============
+
+function renderActionItemsSection(headerText) {
+  let html = `<div class="detail-section-header"><div class="detail-count">${headerText}</div><button class="btn-add-item" onclick="openAddActionItem()">+ Add new item</button></div>`;
+  html += '<div style="font-size:12px;font-weight:600;color:#6b7280;margin-bottom:8px;">Action items</div>';
+  actionItems.forEach(item => {
+    const badgeClass = item.priority === 'High' ? 'badge-high' : 'badge-medium';
+    html += `<div class="item-card">
+      <div class="item-card-actions">
+        <button class="action-icon" onclick="openEditActionItem('${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="action-icon" onclick="openDeleteItem('action item', '${item.title.substring(0,40)}...')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+      </div>
+      <div class="item-card-header">
+        <span class="badge ${badgeClass}">${item.priority}</span>
+        <span class="item-id">ID: ${item.id}</span>
+      </div>
+      <div class="item-card-title">${item.title}</div>
+      <div class="item-card-desc">${item.desc}</div>
+      <div class="item-card-meta">
+        <span class="item-card-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Owners: ${item.owners}</span>
+      </div>
+      <div class="item-card-meta">
+        <span class="item-card-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Due: ${item.due}</span>
+      </div>
+      <div class="item-card-source"><span>Source:</span> "${item.source.substring(0,120)}..." <a href="#" class="read-more">Read more</a></div>
+    </div>`;
+  });
+  return html;
+}
+
+function renderKeyDecisionsSection(headerText) {
+  let html = `<div class="detail-section-header"><div class="detail-count">${headerText}</div><button class="btn-add-item" onclick="openAddDecision()">+ Add new decision</button></div>`;
+  html += '<div style="font-size:12px;font-weight:600;color:#6b7280;margin-bottom:8px;">Key decisions</div>';
+  keyDecisions.forEach(item => {
+    html += `<div class="item-card">
+      <div class="item-card-actions">
+        <button class="action-icon" onclick="openEditDecision('${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="action-icon" onclick="openDeleteItem('key decision', '${item.title.substring(0,50)}...')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+      </div>
+      <div class="item-card-header">
+        <span class="badge badge-confidence">${item.confidence}</span>
+        <span class="item-id">ID: ${item.id}</span>
+        <span class="badge badge-type">${item.type}</span>
+      </div>
+      <div class="item-card-title">${item.title}</div>
+      <div class="item-card-desc">${item.desc}</div>
+      <div class="item-card-meta">
+        <span class="item-card-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Owners: ${item.owners}</span>
+      </div>
+      <div class="item-card-source"><span>Source:</span> "${item.source.substring(0,120)}..." <a href="#" class="read-more">Read more</a></div>
+    </div>`;
+  });
+  return html;
+}
+
+function renderOpenQuestionsSection(headerText) {
+  let html = `<div class="detail-section-header"><div class="detail-count">${headerText}</div><button class="btn-add-item" onclick="openAddQuestion()">+ Add new question</button></div>`;
+  html += '<div style="font-size:12px;font-weight:600;color:#6b7280;margin-bottom:8px;">Open questions</div>';
+  openQuestions.forEach(item => {
+    html += `<div class="item-card">
+      <div class="item-card-actions">
+        <button class="action-icon" onclick="openEditQuestion('${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="action-icon" onclick="openDeleteItem('open question', '${item.topic}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+      </div>
+      <div class="item-card-header">
+        <span class="badge ${item.statusClass}">${item.status}</span>
+        <span class="item-id">ID: ${item.id}</span>
+      </div>
+      <div class="item-card-title">${item.topic}</div>
+      <div class="item-card-desc">${item.question}</div>
+      <div class="item-card-meta">
+        <span class="item-card-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Owners: ${item.owners}</span>
+      </div>
+      <div class="item-card-meta">
+        <span class="item-card-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> Raised by: ${item.raisedBy}</span>
+      </div>
+      <div class="item-card-source"><span>Source:</span> "${item.source.substring(0,120)}..." <a href="#" class="read-more">Read more</a></div>
+    </div>`;
+  });
+  return html;
+}
+
+// ============ CONFIRMATION MODALS ============
+
+function openDeleteInsights() {
+  document.getElementById('confirmTitle').textContent = 'Delete insights';
+  document.getElementById('confirmMessage').textContent = '"March MPR meeting, team review" insights will be permanently removed. You can\'t undo this.';
+  document.getElementById('confirmAction').textContent = 'Delete';
+  confirmCallback = () => { showToast('Insights deleted.'); };
+  document.getElementById('confirmModal').classList.add('show');
+}
+function openDeleteInsightsFromDetail() {
+  closeDetail();
+  setTimeout(() => openDeleteInsights(), 300);
+}
+function openDeleteItem(type, name) {
+  document.getElementById('confirmTitle').textContent = `Delete ${type}`;
+  document.getElementById('confirmMessage').textContent = `"${name}" ${type} will be permanently removed. You can't undo this.`;
+  document.getElementById('confirmAction').textContent = 'Delete';
+  confirmCallback = () => { showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted.`); };
+  document.getElementById('confirmModal').classList.add('show');
+}
+function closeConfirmModal() {
+  document.getElementById('confirmModal').classList.remove('show');
+}
+function executeConfirmAction() {
+  closeConfirmModal();
+  if (confirmCallback) confirmCallback();
+}
+
+// ============ EDIT MODALS ============
+
+function openEditActionItem(id) {
+  const item = actionItems.find(i => i.id === id);
+  if (!item) return;
+  const ownerList = item.owners.split(', ');
+  document.getElementById('editModalContent').innerHTML = `
+    <div class="modal-header"><div class="modal-title">Edit action item</div><button class="modal-close" onclick="closeEditModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Priority</label><select class="form-select"><option ${item.priority==='High'?'selected':''}>High priority</option><option ${item.priority==='Medium'?'selected':''}>Medium priority</option><option>Low priority</option></select></div>
+      <div class="form-group"><label class="form-label">Title</label><textarea class="form-textarea" style="min-height:60px;">${item.title}</textarea></div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea">${item.desc}</textarea></div>
+      <div class="form-group">
+        <label class="form-label">Owners</label>
+        <select class="form-select" style="width:100%;"><option>Selected owners ${ownerList.length}</option></select>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;">${ownerList.map(o => `<span class="owner-tag">${o} <span class="tag-remove">&times;</span></span>`).join('')}</div>
+        <div class="suggested-chips" style="margin-top:8px;"><div class="suggested-label">Suggested owners</div><span class="chip">+ Michelle Wen</span><span class="chip">+ Kathryn Shamrock</span></div>
+      </div>
+      <div class="form-group"><label class="form-label">Due</label><textarea class="form-textarea" style="min-height:50px;">${item.due}</textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn-secondary" onclick="closeEditModal()">Cancel</button><button class="btn-primary" onclick="saveEdit()">Save updates</button></div>
+  `;
+  document.getElementById('editModal').classList.add('show');
+}
+
+function openEditDecision(id) {
+  const item = keyDecisions.find(i => i.id === id);
+  if (!item) return;
+  document.getElementById('editModalContent').innerHTML = `
+    <div class="modal-header"><div class="modal-title">Edit key decision</div><button class="modal-close" onclick="closeEditModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Type</label><select class="form-select"><option>Select type</option><option>Fix critical</option><option>Change strategy</option><option>Defer action</option><option>Confirm approach</option><option>Test experiment</option></select>
+        <div class="suggested-chips"><div class="suggested-label">Suggested type</div><span class="chip">+ Confirm approach</span><span class="chip">+ Change strategy</span></div>
+      </div>
+      <div class="form-group"><label class="form-label">Decision</label><textarea class="form-textarea">${item.title}</textarea></div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea">${item.desc}</textarea></div>
+      <div class="form-group">
+        <label class="form-label">Owners</label>
+        <select class="form-select" style="width:100%;"><option>Selected owners 1</option></select>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;"><span class="owner-tag">${item.owners} <span class="tag-remove">&times;</span></span></div>
+        <div class="suggested-chips" style="margin-top:8px;"><div class="suggested-label">Suggested owners</div><span class="chip">+ Michelle Wen</span><span class="chip">+ Kathryn Shamrock</span></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn-secondary" onclick="closeEditModal()">Cancel</button><button class="btn-primary" onclick="saveEdit()">Save updates</button></div>
+  `;
+  document.getElementById('editModal').classList.add('show');
+}
+
+function openEditQuestion(id) {
+  const item = openQuestions.find(i => i.id === id);
+  if (!item) return;
+  document.getElementById('editModalContent').innerHTML = `
+    <div class="modal-header"><div class="modal-title">Edit open question</div><button class="modal-close" onclick="closeEditModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Status</label><select class="form-select"><option>Select status</option><option>Follow up required</option><option>Data investigation</option><option>Strategic debate</option><option>Deferred</option></select>
+        <div class="suggested-chips"><div class="suggested-label">Suggested status</div><span class="chip">+ Follow up required</span><span class="chip">+ Strategic debate</span></div>
+      </div>
+      <div class="form-group"><label class="form-label">Topic</label><input class="form-input" value="${item.topic}"></div>
+      <div class="form-group"><label class="form-label">Question</label><textarea class="form-textarea">${item.question}</textarea></div>
+      <div class="form-group">
+        <label class="form-label">Owners</label>
+        <select class="form-select" style="width:100%;"><option>Selected owners 1</option></select>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;"><span class="owner-tag">${item.owners} <span class="tag-remove">&times;</span></span></div>
+        <div class="suggested-chips" style="margin-top:8px;"><div class="suggested-label">Suggested owners</div><span class="chip">+ Michelle Wen</span><span class="chip">+ Kathryn Shamrock</span></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Raised by</label>
+        <select class="form-select" style="width:100%;"><option>Selected team member 1</option></select>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;"><span class="owner-tag">${item.raisedBy} <span class="tag-remove">&times;</span></span></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn-secondary" onclick="closeEditModal()">Cancel</button><button class="btn-primary" onclick="saveEdit()">Save updates</button></div>
+  `;
+  document.getElementById('editModal').classList.add('show');
+}
+
+function closeEditModal() { document.getElementById('editModal').classList.remove('show'); }
+function saveEdit() {
+  closeEditModal();
+  showToast('The insights have been updated.');
+}
+
+// ============ ADD MODALS ============
+
+function openAddActionItem() {
+  document.getElementById('addModalContent').innerHTML = `
+    <div class="modal-header"><div><div class="modal-title">Add action item</div><div class="modal-desc">Create an action item to track and assign to team member.</div></div><button class="modal-close" onclick="closeAddModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Priority</label><select class="form-select"><option>Select priority</option><option>High priority</option><option>Medium priority</option><option>Low priority</option></select></div>
+      <div class="form-group"><label class="form-label">Title</label><input class="form-input" placeholder="Implement end-to-end sales tracking..."></div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" placeholder="What details of the action item were emphasized?..."></textarea></div>
+      <div class="form-group"><label class="form-label">Owners</label><select class="form-select" style="width:100%;"><option>Select owners</option></select></div>
+      <div class="form-group"><label class="form-label">Due</label><input class="form-input" placeholder="Before next MPR..."></div>
+    </div>
+    <div class="modal-footer"><button class="btn-secondary" onclick="closeAddModal()">Cancel</button><button class="btn-primary" onclick="addItem()">Add action item</button></div>
+  `;
+  document.getElementById('addModal').classList.add('show');
+}
+
+function openAddDecision() {
+  document.getElementById('addModalContent').innerHTML = `
+    <div class="modal-header"><div><div class="modal-title">Add key decision</div><div class="modal-desc">Create a key decision to track and assign to team member.</div></div><button class="modal-close" onclick="closeAddModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Type</label><select class="form-select"><option>Select type</option><option>Fix critical</option><option>Change strategy</option><option>Defer action</option><option>Confirm approach</option><option>Test experiment</option></select></div>
+      <div class="form-group"><label class="form-label">Decision</label><textarea class="form-textarea" placeholder="Continue allocating at least 80% of paid social spend..."></textarea></div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" placeholder="What details of the decision were emphasized?..."></textarea></div>
+      <div class="form-group"><label class="form-label">Owners</label><select class="form-select" style="width:100%;"><option>Select owners</option></select></div>
+    </div>
+    <div class="modal-footer"><button class="btn-secondary" onclick="closeAddModal()">Cancel</button><button class="btn-primary" onclick="addItem()">Add key decision</button></div>
+  `;
+  document.getElementById('addModal').classList.add('show');
+}
+
+function openAddQuestion() {
+  document.getElementById('addModalContent').innerHTML = `
+    <div class="modal-header"><div><div class="modal-title">Add open question</div><div class="modal-desc">Create an open question to track and assign to team member.</div></div><button class="modal-close" onclick="closeAddModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Status</label><select class="form-select"><option>Select status</option><option>Follow up required</option><option>Data investigation</option><option>Strategic debate</option><option>Deferred</option></select></div>
+      <div class="form-group"><label class="form-label">Topic</label><input class="form-input" placeholder="Conversion rate analysis..."></div>
+      <div class="form-group"><label class="form-label">Question</label><textarea class="form-textarea" placeholder="How are we performing with conversion rates versus last year?..."></textarea></div>
+      <div class="form-group"><label class="form-label">Owners</label><select class="form-select" style="width:100%;"><option>Select owners</option></select></div>
+      <div class="form-group"><label class="form-label">Raised by</label><select class="form-select" style="width:100%;"><option>Select team member</option></select></div>
+    </div>
+    <div class="modal-footer"><button class="btn-secondary" onclick="closeAddModal()">Cancel</button><button class="btn-primary" onclick="addItem()">Add open question</button></div>
+  `;
+  document.getElementById('addModal').classList.add('show');
+}
+
+function closeAddModal() { document.getElementById('addModal').classList.remove('show'); }
+function addItem() {
+  closeAddModal();
+  showToast('Item added successfully.');
+}
+
+// Close modals on overlay click
+document.getElementById('uploadModal').addEventListener('click', function(e) { if (e.target === this) closeUploadModal(); });
+document.getElementById('detailOverlay').addEventListener('click', function(e) { if (e.target === this) closeDetail(); });
+document.getElementById('confirmModal').addEventListener('click', function(e) { if (e.target === this) closeConfirmModal(); });
+document.getElementById('editModal').addEventListener('click', function(e) { if (e.target === this) closeEditModal(); });
+document.getElementById('addModal').addEventListener('click', function(e) { if (e.target === this) closeAddModal(); });
+</script>
+</body>
+</html>
