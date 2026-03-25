@@ -229,6 +229,32 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 
 /* Intercom-style button */
 .intercom-btn { position: fixed; bottom: 24px; right: 24px; width: 48px; height: 48px; background: #1a1a2e; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 50; }
+
+/* ===== NEW: Page-level tabs ===== */
+.page-tabs { display: flex; gap: 0; border-bottom: 2px solid #e5e7eb; margin-bottom: 28px; }
+.page-tab { padding: 12px 20px; font-size: 16px; font-weight: 600; color: #6b7280; border-bottom: 2px solid transparent; margin-bottom: -2px; cursor: pointer; white-space: nowrap; transition: color 0.15s; }
+.page-tab:hover { color: #1a1a2e; }
+.page-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+
+/* "For your review" tab content */
+.review-meeting-header { margin-bottom: 20px; }
+.review-meeting-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.review-meeting-meta { display: flex; gap: 16px; color: #6b7280; font-size: 13px; }
+.review-meeting-meta-item { display: flex; align-items: center; gap: 5px; }
+
+/* Sub-tabs within "For your review" */
+.sub-tabs { display: flex; gap: 0; border-bottom: 2px solid #e5e7eb; margin-bottom: 20px; }
+.sub-tab { padding: 10px 16px; font-size: 14px; font-weight: 500; color: #6b7280; border-bottom: 2px solid transparent; margin-bottom: -2px; cursor: pointer; white-space: nowrap; }
+.sub-tab:hover { color: #1a1a2e; }
+.sub-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+
+/* Review content area */
+.review-content { padding-bottom: 80px; }
+
+/* Review footer bar */
+.review-footer { background: #fff; border-top: 1px solid #e5e7eb; padding: 16px 0; display: flex; justify-content: space-between; align-items: center; margin-top: 24px; position: sticky; bottom: 0; }
+.review-footer-left {}
+.review-footer-right { display: flex; gap: 12px; }
 </style>
 </head>
 <body>
@@ -291,155 +317,156 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
       </button>
     </div>
 
-    <!-- Needs review section -->
-    <div class="section-title">Needs review</div>
-    <div class="table-wrapper">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Meeting title <span class="sort-arrow">&#9662;</span></th>
-            <th>Meeting date <span class="sort-arrow">&#9652;</span></th>
-            <th>Insights status <span class="sort-arrow">&#9662;</span></th>
-            <th>Source files <span class="sort-arrow">&#9662;</span></th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><div class="meeting-title-cell" onclick="openReviewFlow()"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Feb MPR transcript</div></td>
-            <td>Feb 9, 2026</td>
-            <td><span class="status-badge"><span class="status-dot needs-review"></span>Needs review</span></td>
-            <td><span class="source-count">2</span></td>
-            <td><button class="btn-review" onclick="openReviewFlow()">Review insights</button></td>
-          </tr>
-          <tr>
-            <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>January MPR transcript</div></td>
-            <td>Jan 23, 2026</td>
-            <td><span class="status-badge"><span class="status-dot needs-review"></span>Needs review</span></td>
-            <td><span class="source-count">1</span></td>
-            <td><button class="btn-review">Review insights</button></td>
-          </tr>
-          <tr>
-            <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Jan MPR transcript</div></td>
-            <td>Jan 9, 2026</td>
-            <td><span class="status-badge"><span class="status-dot needs-review"></span>Needs review</span></td>
-            <td><span class="source-count">1</span></td>
-            <td><button class="btn-review">Review insights</button></td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Page-level tabs -->
+    <div class="page-tabs">
+      <div class="page-tab active" data-page-tab="review" onclick="switchPageTab('review')">For your review</div>
+      <div class="page-tab" data-page-tab="all" onclick="switchPageTab('all')">All meetings</div>
     </div>
 
-    <!-- Actions section -->
-    <div class="section-title">Actions</div>
-    <div class="search-bar">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" placeholder="Search insights...">
+    <!-- "For your review" tab content -->
+    <div id="forYourReviewContent">
+      <div class="review-meeting-header">
+        <div class="review-meeting-title">March MPR meeting, team review</div>
+        <div class="review-meeting-meta">
+          <span class="review-meeting-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> March 11, 2026</span>
+          <span class="review-meeting-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> 2 source files</span>
+        </div>
+      </div>
+
+      <!-- Sub-tabs -->
+      <div class="sub-tabs" id="reviewSubTabs">
+        <div class="sub-tab active" data-sub-tab="actions" onclick="switchReviewSubTab('actions')">Action items (10)</div>
+        <div class="sub-tab" data-sub-tab="decisions" onclick="switchReviewSubTab('decisions')">Key decisions (7)</div>
+        <div class="sub-tab" data-sub-tab="questions" onclick="switchReviewSubTab('questions')">Open questions (9)</div>
+      </div>
+
+      <!-- Inline review content -->
+      <div class="review-content" id="reviewBody"></div>
+
+      <!-- Footer bar -->
+      <div class="review-footer">
+        <div class="review-footer-left">
+          <button class="btn-danger-outline" onclick="openDeleteInsights()">Delete</button>
+        </div>
+        <div class="review-footer-right">
+          <button class="btn-red" onclick="downloadInsights()">Download insights</button>
+          <button class="btn-primary" onclick="confirmReviewInsights()">Confirm insights</button>
+        </div>
+      </div>
     </div>
-    <div class="table-wrapper" id="insightsTable">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Meeting title <span class="sort-arrow">&#9662;</span></th>
-            <th>Meeting date <span class="sort-arrow">&#9662;</span></th>
-            <th>Insights status <span class="sort-arrow">&#9662;</span></th>
-            <th>Source files <span class="sort-arrow">&#9662;</span></th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="insightsBody">
-          <tr>
-            <td><div class="meeting-title-cell" onclick="openDetailView('March MPR meeting+review')"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>March MPR meeting+review</div></td>
-            <td>Mar 9, 2026</td>
-            <td><span class="status-badge"><span class="status-dot reviewed"></span>Reviewed</span></td>
-            <td><span class="source-count">1</span></td>
-            <td><div class="action-icons">
-              <button class="action-icon" onclick="openDetailView('March MPR meeting+review')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
-              <button class="action-icon" onclick="openDeleteInsights()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-            </div></td>
-          </tr>
-          <tr>
-            <td><div class="meeting-title-cell" onclick="openDetailView('March mpr')"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>March mpr</div></td>
-            <td>Mar 9, 2026</td>
-            <td><span class="status-badge"><span class="status-dot reviewed"></span>Reviewed</span></td>
-            <td><span class="source-count">1</span></td>
-            <td><div class="action-icons">
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-            </div></td>
-          </tr>
-          <tr>
-            <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Feb MPR transcript</div></td>
-            <td>Feb 23, 2026</td>
-            <td><span class="status-badge"><span class="status-dot needs-review"></span>Needs review</span></td>
-            <td><span class="source-count">2</span></td>
-            <td><div class="action-icons">
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-            </div></td>
-          </tr>
-          <tr>
-            <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Feb MPR transcript - 2</div></td>
-            <td>Feb 9, 2026</td>
-            <td><span class="status-badge"><span class="status-dot reviewed"></span>Reviewed</span></td>
-            <td><span class="source-count">1</span></td>
-            <td><div class="action-icons">
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-            </div></td>
-          </tr>
-          <tr>
-            <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>January MPR transcript</div></td>
-            <td>Jan 23, 2026</td>
-            <td><span class="status-badge"><span class="status-dot needs-review"></span>Needs review</span></td>
-            <td><span class="source-count">1</span></td>
-            <td><div class="action-icons">
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-            </div></td>
-          </tr>
-          <tr>
-            <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Jan MPR transcript</div></td>
-            <td>Jan 9, 2026</td>
-            <td><span class="status-badge"><span class="status-dot needs-review"></span>Needs review</span></td>
-            <td><span class="source-count">1</span></td>
-            <td><div class="action-icons">
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-            </div></td>
-          </tr>
-          <tr>
-            <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>dec MPR</div></td>
-            <td>Dec 23, 2025</td>
-            <td><span class="status-badge"><span class="status-dot reviewed"></span>Reviewed</span></td>
-            <td><span class="source-count">3</span></td>
-            <td><div class="action-icons">
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-            </div></td>
-          </tr>
-          <tr>
-            <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>dec MPR</div></td>
-            <td>Dec 9, 2025</td>
-            <td><span class="status-badge"><span class="status-dot reviewed"></span>Reviewed</span></td>
-            <td><span class="source-count">1</span></td>
-            <td><div class="action-icons">
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
-              <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-            </div></td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="table-footer">8 Meetings | 5 Reviewed insights | 3 Needed review</div>
+
+    <!-- "All meetings" tab content -->
+    <div id="allMeetingsContent" style="display:none;">
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search insights...">
+      </div>
+      <div class="table-wrapper" id="insightsTable">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Meeting title <span class="sort-arrow">&#9662;</span></th>
+              <th>Meeting date <span class="sort-arrow">&#9662;</span></th>
+              <th>Insights status <span class="sort-arrow">&#9662;</span></th>
+              <th>Source files <span class="sort-arrow">&#9662;</span></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="insightsBody">
+            <tr>
+              <td><div class="meeting-title-cell" onclick="openDetailView('March MPR meeting+review')"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>March MPR meeting+review</div></td>
+              <td>Mar 9, 2026</td>
+              <td><span class="status-badge"><span class="status-dot reviewed"></span>Reviewed</span></td>
+              <td><span class="source-count">1</span></td>
+              <td><div class="action-icons">
+                <button class="action-icon" onclick="openDetailView('March MPR meeting+review')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+                <button class="action-icon" onclick="openDeleteInsights()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+              </div></td>
+            </tr>
+            <tr>
+              <td><div class="meeting-title-cell" onclick="openDetailView('March mpr')"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>March mpr</div></td>
+              <td>Mar 9, 2026</td>
+              <td><span class="status-badge"><span class="status-dot reviewed"></span>Reviewed</span></td>
+              <td><span class="source-count">1</span></td>
+              <td><div class="action-icons">
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+              </div></td>
+            </tr>
+            <tr>
+              <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Feb MPR transcript</div></td>
+              <td>Feb 23, 2026</td>
+              <td><span class="status-badge"><span class="status-dot needs-review"></span>Needs review</span></td>
+              <td><span class="source-count">2</span></td>
+              <td><div class="action-icons">
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+              </div></td>
+            </tr>
+            <tr>
+              <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Feb MPR transcript - 2</div></td>
+              <td>Feb 9, 2026</td>
+              <td><span class="status-badge"><span class="status-dot reviewed"></span>Reviewed</span></td>
+              <td><span class="source-count">1</span></td>
+              <td><div class="action-icons">
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+              </div></td>
+            </tr>
+            <tr>
+              <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>January MPR transcript</div></td>
+              <td>Jan 23, 2026</td>
+              <td><span class="status-badge"><span class="status-dot needs-review"></span>Needs review</span></td>
+              <td><span class="source-count">1</span></td>
+              <td><div class="action-icons">
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+              </div></td>
+            </tr>
+            <tr>
+              <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Jan MPR transcript</div></td>
+              <td>Jan 9, 2026</td>
+              <td><span class="status-badge"><span class="status-dot needs-review"></span>Needs review</span></td>
+              <td><span class="source-count">1</span></td>
+              <td><div class="action-icons">
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+              </div></td>
+            </tr>
+            <tr>
+              <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>dec MPR</div></td>
+              <td>Dec 23, 2025</td>
+              <td><span class="status-badge"><span class="status-dot reviewed"></span>Reviewed</span></td>
+              <td><span class="source-count">3</span></td>
+              <td><div class="action-icons">
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+              </div></td>
+            </tr>
+            <tr>
+              <td><div class="meeting-title-cell"><svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>dec MPR</div></td>
+              <td>Dec 9, 2025</td>
+              <td><span class="status-badge"><span class="status-dot reviewed"></span>Reviewed</span></td>
+              <td><span class="source-count">1</span></td>
+              <td><div class="action-icons">
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+                <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+              </div></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="table-footer">8 Meetings | 5 Reviewed insights | 3 Needs review</div>
+      </div>
     </div>
+
   </div>
 </div>
 
@@ -539,7 +566,7 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
   <div class="generating-text">Generating insights...</div>
 </div>
 
-<!-- Detail View / Review Flow -->
+<!-- Detail View (for viewing reviewed meetings from "All meetings" tab) -->
 <div class="detail-overlay" id="detailOverlay">
   <div class="detail-panel">
     <div class="detail-header">
@@ -633,8 +660,8 @@ const openQuestions = [
 
 // ============ STATE ============
 let currentTab = 'actions';
-let isReviewMode = false;
-let reviewStep = 0; // 0=actions, 1=decisions, 2=questions
+let currentPageTab = 'review';
+let currentReviewSubTab = 'actions';
 let confirmCallback = null;
 
 // ============ FUNCTIONS ============
@@ -644,6 +671,40 @@ function showToast(text) {
   document.getElementById('toastText').textContent = text;
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// Page-level tab switching
+function switchPageTab(tab) {
+  currentPageTab = tab;
+  document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.page-tab[data-page-tab="${tab}"]`).classList.add('active');
+
+  if (tab === 'review') {
+    document.getElementById('forYourReviewContent').style.display = '';
+    document.getElementById('allMeetingsContent').style.display = 'none';
+  } else {
+    document.getElementById('forYourReviewContent').style.display = 'none';
+    document.getElementById('allMeetingsContent').style.display = '';
+  }
+}
+
+// Review sub-tab switching
+function switchReviewSubTab(tab) {
+  currentReviewSubTab = tab;
+  document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.sub-tab[data-sub-tab="${tab}"]`).classList.add('active');
+  renderReviewContent();
+}
+
+function renderReviewContent() {
+  const body = document.getElementById('reviewBody');
+  if (currentReviewSubTab === 'actions') {
+    body.innerHTML = renderActionItemsSection('10 Action items');
+  } else if (currentReviewSubTab === 'decisions') {
+    body.innerHTML = renderKeyDecisionsSection('7 Key decisions');
+  } else if (currentReviewSubTab === 'questions') {
+    body.innerHTML = renderOpenQuestionsSection('9 Open questions');
+  }
 }
 
 // Upload modal
@@ -664,71 +725,42 @@ function generateInsights() {
   document.getElementById('generatingOverlay').classList.add('show');
   setTimeout(() => {
     document.getElementById('generatingOverlay').classList.remove('show');
-    openReviewFlow();
+    // Switch to "For your review" tab and show generated insights inline
+    switchPageTab('review');
+    currentReviewSubTab = 'actions';
+    document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('.sub-tab[data-sub-tab="actions"]').classList.add('active');
+    renderReviewContent();
+    showToast('Insights generated successfully.');
   }, 2000);
 }
 
-// Review flow
-function openReviewFlow() {
-  isReviewMode = true;
-  reviewStep = 0;
-  document.getElementById('detailOverlay').classList.add('show');
-  renderReviewStep();
-}
-
-function renderReviewStep() {
-  const tabs = document.getElementById('detailTabs');
-  const body = document.getElementById('detailBody');
-  const footer = document.getElementById('detailFooter');
-  document.getElementById('detailTitle').textContent = 'March MPR meeting, team review';
-
-  if (isReviewMode) {
-    // Hide tabs in review mode, show step-specific content
-    tabs.style.display = 'none';
-    if (reviewStep === 0) {
-      body.innerHTML = renderActionItemsSection('10 Action items generated');
-      footer.innerHTML = `<div></div><button class="btn-primary" onclick="nextReviewStep()">Next: Key decisions</button>`;
-    } else if (reviewStep === 1) {
-      body.innerHTML = renderKeyDecisionsSection('7 Key decisions generated') +
-        '<div class="knowledge-banner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>The uploaded files have been incorporated into the Knowledge database and will enhance data accuracy through analytics reference.</div>';
-      footer.innerHTML = `<button class="btn-secondary" onclick="prevReviewStep()">Back to items</button><button class="btn-primary" onclick="nextReviewStep()">Next: Open questions</button>`;
-    } else if (reviewStep === 2) {
-      body.innerHTML = renderOpenQuestionsSection('9 Open questions generated') +
-        '<div class="knowledge-banner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>The uploaded files have been incorporated into the Knowledge database and will enhance data accuracy through analytics reference.</div>';
-      footer.innerHTML = `<button class="btn-secondary" onclick="prevReviewStep()">Back to decisions</button><button class="btn-primary" onclick="confirmInsights()">Confirm insights</button>`;
-    }
-  }
-}
-
-function nextReviewStep() {
-  reviewStep++;
-  renderReviewStep();
-  document.getElementById('detailBody').scrollTop = 0;
-}
-function prevReviewStep() {
-  reviewStep--;
-  renderReviewStep();
-  document.getElementById('detailBody').scrollTop = 0;
-}
-function confirmInsights() {
-  closeDetail();
+// Confirm review insights (from the inline "For your review" footer)
+function confirmReviewInsights() {
   showToast('The insights have been uploaded and reviewed.');
 }
 
-// Detail view (post-review)
+// Download insights
+function downloadInsights() {
+  showToast('Insights downloaded.');
+}
+
+// Detail view (for viewing reviewed meetings from "All meetings" tab)
 function openDetailView(title) {
-  isReviewMode = false;
   currentTab = 'actions';
   document.getElementById('detailOverlay').classList.add('show');
   document.getElementById('detailTitle').textContent = 'March MPR meeting, team review';
   document.getElementById('detailTabs').style.display = 'flex';
+  // Reset tab active states
+  document.querySelectorAll('#detailTabs .tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('#detailTabs .tab[data-tab="actions"]').classList.add('active');
   renderDetailTab();
 }
 
 function switchTab(tab) {
   currentTab = tab;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+  document.querySelectorAll('#detailTabs .tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`#detailTabs .tab[data-tab="${tab}"]`).classList.add('active');
   renderDetailTab();
   document.getElementById('detailBody').scrollTop = 0;
 }
@@ -751,7 +783,6 @@ function renderDetailTab() {
 
 function closeDetail() {
   document.getElementById('detailOverlay').classList.remove('show');
-  isReviewMode = false;
 }
 
 // ============ RENDER SECTIONS ============
@@ -997,6 +1028,11 @@ function addItem() {
   closeAddModal();
   showToast('Item added successfully.');
 }
+
+// ============ INIT ============
+
+// Render default review content on page load
+renderReviewContent();
 
 // Close modals on overlay click
 document.getElementById('uploadModal').addEventListener('click', function(e) { if (e.target === this) closeUploadModal(); });
