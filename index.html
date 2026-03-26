@@ -11,6 +11,39 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f6f8; col
 button { font-family: inherit; cursor: pointer; border: none; background: none; font-size: inherit; }
 input, select, textarea { font-family: inherit; font-size: inherit; }
 
+/* Focus visible — keyboard-only focus ring */
+:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+:focus:not(:focus-visible) { outline: none; }
+[role="tab"]:focus-visible, [role="button"]:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; border-radius: 4px; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+/* Text overflow utilities */
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.word-break { word-wrap: break-word; overflow-wrap: break-word; }
+
+/* Screen reader only */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* Skip to content link */
+.skip-link { position: absolute; top: -100px; left: 16px; background: #2563eb; color: #fff; padding: 8px 16px; border-radius: 0 0 8px 8px; z-index: 1000; font-weight: 600; font-size: 14px; text-decoration: none; }
+.skip-link:focus { top: 0; }
+
+/* Spacing scale */
+:root {
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-base: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+}
+
 /* Layout */
 .app { display: flex; min-height: 100vh; }
 
@@ -20,8 +53,8 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 .sidebar-brand-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #2563eb, #7c3aed); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 16px; }
 .sidebar-brand-text { font-weight: 600; font-size: 15px; }
 .sidebar-brand-sub { color: #6b7280; font-size: 12px; }
-.sidebar-section { padding: 0 12px; margin-bottom: 16px; }
-.sidebar-section-label { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; padding: 0 8px; margin-bottom: 4px; }
+.sidebar-section { padding: 0 var(--space-md); margin-bottom: var(--space-lg); }
+.sidebar-section-label { font-size: 10px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.08em; padding: 0 var(--space-sm); margin-bottom: var(--space-sm); }
 .sidebar-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; color: #4b5563; font-size: 13px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
 .sidebar-item:hover { background: #f3f4f6; }
 .sidebar-item.active { background: #eff6ff; color: #2563eb; }
@@ -29,13 +62,13 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 .sidebar-item-icon svg { width: 16px; height: 16px; }
 
 /* Main content */
-.main { flex: 1; padding: 32px 40px; overflow-y: auto; position: relative; }
-.main-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; }
+.main { flex: 1; padding: var(--space-xl) var(--space-2xl) 120px; overflow-y: auto; position: relative; }
+.main-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-xl); }
 .main-title-area {}
-.main-icon { width: 44px; height: 44px; background: #eff6ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+.main-icon { width: 44px; height: 44px; background: #eff6ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-sm); }
 .main-icon svg { width: 22px; height: 22px; color: #2563eb; }
-.main-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-.main-subtitle { color: #6b7280; font-size: 14px; }
+.main-title { font-size: 24px; font-weight: 700; margin-bottom: 2px; letter-spacing: -0.02em; }
+.main-subtitle { color: #6b7280; font-size: 13px; max-width: 520px; line-height: 1.6; }
 
 /* Upload button */
 .btn-upload { display: flex; align-items: center; gap: 8px; background: #2563eb; color: #fff; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 14px; transition: background 0.15s; }
@@ -56,7 +89,7 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 .file-icon { width: 20px; height: 20px; color: #9ca3af; }
 .status-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; }
-.status-dot.needs-review { background: #ef4444; }
+.status-dot.needs-review { background: #f59e0b; }
 .status-dot.reviewed { background: #22c55e; }
 .source-count { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; background: #f3f4f6; border-radius: 6px; font-size: 12px; font-weight: 600; padding: 0 6px; }
 .btn-review { background: #2563eb; color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 13px; white-space: nowrap; }
@@ -164,21 +197,21 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 
 /* Detail body */
 .detail-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
-.detail-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.detail-count { font-size: 16px; font-weight: 700; }
+.detail-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg); }
+.detail-count { font-size: 15px; font-weight: 700; color: #374151; }
 .btn-add-item { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: #4b5563; padding: 6px 12px; border-radius: 6px; border: 1px solid #e5e7eb; }
 .btn-add-item:hover { background: #f3f4f6; }
 
 /* Item cards */
-.item-card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-bottom: 12px; position: relative; transition: box-shadow 0.15s; }
+.item-card { border: 1px solid #e5e7eb; border-radius: 12px; padding: var(--space-lg) var(--space-lg) var(--space-base); margin-bottom: var(--space-base); position: relative; transition: box-shadow 0.15s; }
 .item-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-.item-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
-.item-card-actions { position: absolute; top: 16px; right: 16px; display: flex; gap: 2px; }
+.item-card-header { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md); flex-wrap: wrap; }
+.item-card-actions { position: absolute; top: var(--space-lg); right: var(--space-lg); display: flex; gap: 2px; }
 .item-card-actions .action-icon { width: 28px; height: 28px; }
 
 /* Priority/status badges */
 .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
-.badge-high { background: #fef2f2; color: #dc2626; }
+.badge-high { background: #fff7ed; color: #c2410c; }
 .badge-medium { background: #fef9c3; color: #a16207; }
 .badge-low { background: #f0fdf4; color: #16a34a; }
 .badge-confidence { background: #dcfce7; color: #16a34a; font-size: 12px; padding: 2px 8px; border-radius: 10px; }
@@ -187,15 +220,13 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 .badge-status-investigation { background: #fce7f3; color: #be185d; font-size: 11px; padding: 2px 8px; border-radius: 4px; }
 .badge-status-debate { background: #fef3c7; color: #92400e; font-size: 11px; padding: 2px 8px; border-radius: 4px; }
 .badge-status-deferred { background: #f3e8ff; color: #7c3aed; font-size: 11px; padding: 2px 8px; border-radius: 4px; }
-.item-id { color: #9ca3af; font-size: 12px; font-weight: 500; }
+.item-id { display: none; }
 
-.item-card-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; padding-right: 60px; }
-.item-card-desc { color: #4b5563; font-size: 13px; margin-bottom: 10px; padding-right: 60px; }
-.item-card-meta { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: #6b7280; margin-bottom: 10px; }
+.item-card-title { font-weight: 600; font-size: 14px; margin-bottom: 3px; padding-right: 60px; line-height: 1.4; }
+.item-card-desc { color: #4b5563; font-size: 13px; margin-bottom: var(--space-base); padding-right: 60px; line-height: 1.55; }
+.item-card-meta { display: flex; flex-wrap: wrap; gap: var(--space-md); font-size: 12px; color: #6b7280; margin-bottom: var(--space-sm); }
 .item-card-meta-item { display: flex; align-items: flex-start; gap: 4px; }
 .item-card-meta-item svg { width: 14px; height: 14px; margin-top: 1px; flex-shrink: 0; }
-.item-card-source { background: #f3f4f6; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: #6b7280; line-height: 1.5; }
-.item-card-source span { font-weight: 500; color: #4b5563; }
 .read-more { color: #2563eb; text-decoration: none; font-weight: 500; font-size: 12px; }
 
 /* Detail footer */
@@ -227,30 +258,113 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .generating-text { color: #fff; font-weight: 600; font-size: 16px; }
 
-/* Intercom-style button */
-.intercom-btn { position: fixed; bottom: 24px; right: 24px; width: 48px; height: 48px; background: #1a1a2e; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 50; }
+/* Chat bar — persistent horizontal bottom bar */
+.chat-bar { position: fixed; bottom: 0; left: 260px; right: 0; background: #fff; border-top: 1px solid #e5e7eb; z-index: 50; display: flex; flex-direction: column; transition: height 0.25s ease; box-shadow: 0 -2px 12px rgba(0,0,0,0.04); }
+.chat-bar.expanded { height: 360px; }
+.chat-bar-suggestions { display: flex; gap: 8px; padding: 8px 24px 0; overflow-x: auto; flex-shrink: 0; }
+.chat-suggestion { padding: 6px 14px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 20px; font-size: 12px; color: #374151; cursor: pointer; white-space: nowrap; transition: background 0.15s, border-color 0.15s; flex-shrink: 0; }
+.chat-suggestion:hover { background: #eff6ff; border-color: #bfdbfe; }
+.chat-bar-input { display: flex; align-items: center; gap: 10px; padding: 10px 24px; flex-shrink: 0; }
+.chat-bar-input .chat-ai-label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #4f46e5; flex-shrink: 0; }
+.chat-bar-input .chat-ai-label .ai-dot { width: 7px; height: 7px; background: #22c55e; border-radius: 50%; }
+.chat-bar-input input { flex: 1; padding: 9px 14px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; outline: none; }
+.chat-bar-input input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.chat-bar-input .chat-send-btn { width: 34px; height: 34px; background: #2563eb; color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
+.chat-bar-input .chat-send-btn:hover { background: #1d4ed8; }
+.chat-bar-toggle { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 6px; color: #6b7280; cursor: pointer; flex-shrink: 0; }
+.chat-bar-toggle:hover { background: #f3f4f6; }
+.chat-bar-messages { flex: 1; overflow-y: auto; padding: 16px 24px; display: none; flex-direction: column; gap: 10px; }
+.chat-bar.expanded .chat-bar-messages { display: flex; }
+.chat-bar.expanded .chat-bar-suggestions { display: none; }
+.chat-msg-user { align-self: flex-end; background: #2563eb; color: #fff; padding: 8px 14px; border-radius: 12px 12px 4px 12px; max-width: 60%; font-size: 13px; }
+.chat-msg-ai { align-self: flex-start; background: #f3f4f6; color: #374151; padding: 8px 14px; border-radius: 12px 12px 12px 4px; max-width: 60%; font-size: 13px; }
 
-/* ===== NEW: Page-level tabs ===== */
-.page-tabs { display: flex; gap: 0; border-bottom: 2px solid #e5e7eb; margin-bottom: 28px; }
-.page-tab { padding: 14px 24px; font-size: 18px; font-weight: 700; color: #6b7280; border-bottom: 3px solid transparent; margin-bottom: -2px; cursor: pointer; white-space: nowrap; transition: color 0.15s; }
+/* Multi-select checkbox on cards */
+.item-card-select { position: absolute; top: 16px; left: 16px; }
+.item-card-select input { width: 18px; height: 18px; accent-color: #2563eb; cursor: pointer; }
+.item-card { padding-left: 44px; }
+
+/* Bulk action bar */
+.bulk-bar { position: fixed; bottom: 72px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: #fff; padding: 10px 20px; border-radius: 10px; display: none; align-items: center; gap: 16px; font-size: 13px; font-weight: 500; z-index: 55; box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+.bulk-bar.show { display: flex; }
+.bulk-bar-count { opacity: 0.8; }
+.bulk-bar button { padding: 7px 18px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.bulk-bar .bulk-approve { background: #22c55e; color: #fff; }
+.bulk-bar .bulk-approve:hover { background: #16a34a; }
+.bulk-bar .bulk-deselect { background: transparent; color: #9ca3af; border: 1px solid #4b5563; }
+.bulk-bar .bulk-deselect:hover { color: #fff; border-color: #6b7280; }
+
+/* Filters bar */
+.filters-bar { display: flex; gap: var(--space-sm); align-items: center; margin-bottom: var(--space-sm); flex-wrap: wrap; padding: var(--space-md) 0; }
+.filter-select { padding: 7px 14px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; background: #fff; cursor: pointer; color: #4b5563; font-weight: 500; appearance: auto; }
+.filter-select:focus { border-color: #2563eb; outline: none; }
+.filters-label { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.06em; margin-right: var(--space-xs); }
+
+/* Teach / Feedback button */
+.btn-teach { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 12px; font-weight: 500; color: #6b7280; cursor: pointer; transition: all 0.15s; margin-top: 10px; }
+.btn-teach:hover { background: #eff6ff; border-color: #bfdbfe; color: #2563eb; }
+.btn-teach svg { width: 14px; height: 14px; }
+
+/* Feedback panel */
+.feedback-panel { margin-top: 10px; padding: 12px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; display: none; }
+.feedback-panel.open { display: block; }
+.feedback-panel textarea { width: 100%; padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 13px; resize: vertical; min-height: 60px; outline: none; font-family: inherit; }
+.feedback-panel textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.feedback-panel-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+.feedback-panel-actions button { padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 500; }
+
+/* Approve button on card */
+.btn-approve { display: inline-flex; align-items: center; gap: 5px; padding: 6px 16px; background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 12px; font-weight: 600; color: #4b5563; cursor: pointer; transition: all 0.15s; }
+.btn-approve:hover { background: #f0fdf4; border-color: #86efac; color: #16a34a; }
+.btn-approve.is-approved { background: #f0fdf4; border-color: #86efac; color: #16a34a; }
+.btn-approve svg { width: 14px; height: 14px; }
+
+/* Source files dropdown */
+.source-files-trigger { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 2px; }
+.source-files-trigger:hover { color: #2563eb; }
+.source-files-dropdown { margin-top: 8px; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 8px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: none; }
+.source-files-dropdown.open { display: block; }
+.source-file-item { display: flex; align-items: center; gap: 10px; padding: 8px 14px; font-size: 13px; color: #374151; cursor: pointer; transition: background 0.15s; }
+.source-file-item:hover { background: #f9fafb; }
+.source-file-item svg { width: 16px; height: 16px; color: #6b7280; flex-shrink: 0; }
+.source-file-item .download-icon { margin-left: auto; color: #2563eb; }
+
+/* Source expandable */
+.item-card-source { background: #f9fafb; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: #6b7280; line-height: 1.6; cursor: pointer; transition: background 0.15s; border: 1px solid transparent; }
+.item-card-source:hover { background: #f3f4f6; border-color: #e5e7eb; }
+.item-card-source span { font-weight: 500; color: #4b5563; }
+.item-card-source.expanded { background: #fff; border-color: #e5e7eb; }
+.source-full { display: none; margin-top: 6px; padding-top: 6px; border-top: 1px solid #e5e7eb; }
+.item-card-source.expanded .source-full { display: block; }
+.item-card-source.expanded .source-preview { display: none; }
+
+/* Section divider — generous separation between content groups */
+.section-divider { margin: var(--space-2xl) 0 var(--space-lg); padding-bottom: 0; border: none; }
+.section-divider:first-child { margin-top: var(--space-sm); }
+.section-divider-label { font-size: 12px; font-weight: 700; color: #1a1a2e; text-transform: uppercase; letter-spacing: 0.06em; padding-bottom: 10px; border-bottom: 2px solid #e5e7eb; }
+
+/* ===== Page-level tabs ===== */
+.page-tabs { display: flex; gap: 0; border-bottom: 2px solid #e5e7eb; margin-bottom: var(--space-xl); }
+.page-tab { padding: 14px var(--space-lg); font-size: 17px; font-weight: 700; color: #6b7280; border-bottom: 3px solid transparent; margin-bottom: -2px; cursor: pointer; white-space: nowrap; transition: color 0.15s; }
 .page-tab:hover { color: #1a1a2e; }
 .page-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
 .page-tabs { border-bottom-width: 3px; }
 
-/* AI Meeting Summary */
-.ai-summary { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
-.ai-summary-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+/* AI Meeting Summary — editorial paper style */
+.ai-summary { background: #fffdf8; background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); border: none; border-radius: 0; padding: var(--space-xl) var(--space-xl); margin-bottom: var(--space-xl); border-left: 3px solid #c7d2fe; position: relative; }
+.ai-summary-header { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
 .ai-summary-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; background: linear-gradient(135deg, #eff6ff, #f3e8ff); border: 1px solid #c7d2fe; border-radius: 6px; font-size: 11px; font-weight: 600; color: #4f46e5; }
 .ai-summary-badge svg { width: 12px; height: 12px; }
 .ai-summary-title { font-size: 14px; font-weight: 600; color: #1a1a2e; }
-.ai-summary-text { font-size: 13px; color: #4b5563; line-height: 1.7; }
-.ai-summary-text p { margin-bottom: 8px; }
+.ai-summary-text { font-size: 14px; color: #374151; line-height: 1.8; letter-spacing: -0.01em; }
+.ai-summary-text p { margin-bottom: 12px; }
 .ai-summary-text p:last-child { margin-bottom: 0; }
-.ai-summary-footer { display: flex; align-items: center; gap: 6px; margin-top: 12px; font-size: 11px; color: #9ca3af; }
+.ai-summary-text p::first-line { font-weight: 500; }
+.ai-summary-footer { display: flex; align-items: center; gap: 6px; margin-top: 14px; font-size: 11px; color: #9ca3af; padding-top: 12px; border-top: 1px solid #f0ece4; }
 .ai-summary-footer svg { width: 12px; height: 12px; }
 
 /* Suggested indicator on cards */
-.suggested-banner { display: flex; align-items: center; gap: 6px; padding: 6px 10px; background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; margin-bottom: 10px; font-size: 12px; color: #92400e; font-weight: 500; }
+.suggested-banner { display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm) var(--space-md); background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; margin-bottom: var(--space-md); font-size: 12px; color: #92400e; font-weight: 500; }
 .suggested-banner svg { width: 14px; height: 14px; flex-shrink: 0; }
 
 /* Approval checkbox */
@@ -262,15 +376,15 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 .item-card.approved .item-card-approve { border-top-color: #bbf7d0; }
 
 /* Approval progress */
-.approval-progress { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; margin-bottom: 16px; font-size: 13px; color: #1e40af; font-weight: 500; }
+.approval-progress { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-md) var(--space-base); background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; margin-bottom: var(--space-lg); font-size: 13px; color: #1e40af; font-weight: 500; }
 .approval-progress svg { width: 16px; height: 16px; flex-shrink: 0; }
 .approval-progress-bar { flex: 1; height: 6px; background: #dbeafe; border-radius: 3px; overflow: hidden; }
 .approval-progress-fill { height: 100%; background: #2563eb; border-radius: 3px; transition: width 0.3s ease; }
 
 /* "For your review" tab content */
-.review-meeting-header { margin-bottom: 20px; }
-.review-meeting-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
-.review-meeting-meta { display: flex; gap: 16px; color: #6b7280; font-size: 13px; }
+.review-meeting-header { margin-bottom: var(--space-lg); }
+.review-meeting-title { font-size: 19px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.01em; }
+.review-meeting-meta { display: flex; gap: var(--space-base); color: #6b7280; font-size: 13px; }
 .review-meeting-meta-item { display: flex; align-items: center; gap: 5px; }
 
 /* Sub-tabs within "For your review" */
@@ -280,19 +394,148 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 .sub-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
 
 /* Review content area */
-.review-content { padding-bottom: 80px; }
+.review-content { padding-bottom: var(--space-3xl); }
 
 /* Review footer bar */
-.review-footer { background: #fff; border-top: 1px solid #e5e7eb; padding: 16px 0; display: flex; justify-content: space-between; align-items: center; margin-top: 24px; position: sticky; bottom: 0; }
+.review-footer { background: #fff; border-top: 1px solid #e5e7eb; padding: var(--space-base) 0; display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-xl); position: sticky; bottom: 0; }
 .review-footer-left {}
 .review-footer-right { display: flex; gap: 12px; }
+
+/* Mobile menu toggle — hidden on desktop */
+.mobile-menu-btn { display: none; width: 44px; height: 44px; align-items: center; justify-content: center; border-radius: 8px; color: #1a1a2e; flex-shrink: 0; }
+.mobile-menu-btn svg { width: 20px; height: 20px; }
+.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(107,114,128,0.5); z-index: 59; }
+.sidebar-overlay.show { display: block; }
+
+/* ============ RESPONSIVE: Tablet (≤1024px) ============ */
+@media (max-width: 1024px) {
+  .sidebar { width: 220px; }
+  .chat-bar { left: 220px; }
+  .main { padding: 24px 24px 100px; }
+  .main-header { flex-direction: column; gap: 16px; }
+  .search-bar { width: 100%; }
+  .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .detail-panel { width: 98%; max-width: 640px; }
+}
+
+/* ============ RESPONSIVE: Mobile (≤768px) ============ */
+@media (max-width: 768px) {
+  /* Show hamburger, hide sidebar */
+  .mobile-menu-btn { display: flex; }
+  .sidebar { position: fixed; left: -280px; top: 0; bottom: 0; width: 260px; z-index: 60; transition: left 0.25s ease; box-shadow: none; }
+  .sidebar.open { left: 0; box-shadow: 4px 0 24px rgba(0,0,0,0.1); }
+
+  /* Main fills full width */
+  .main { padding: 16px 16px 120px; }
+  .main-header { flex-direction: column; gap: 12px; }
+  .main-title { font-size: 18px; }
+  .main-subtitle { font-size: 13px; }
+  .main-icon { width: 36px; height: 36px; margin-bottom: 8px; }
+  .main-icon svg { width: 18px; height: 18px; }
+  .btn-upload { width: 100%; justify-content: center; padding: 12px 20px; }
+
+  /* Page tabs — full width */
+  .page-tabs { margin-bottom: 16px; }
+  .page-tab { padding: 12px 16px; font-size: 15px; flex: 1; text-align: center; }
+
+  /* Filters — stack on mobile */
+  .filters-bar { gap: 8px; }
+  .filter-select { flex: 1; min-width: 0; font-size: 12px; padding: 8px 10px; }
+
+  /* Item cards — tighter on mobile */
+  .item-card { padding: 14px 14px 14px 40px; margin-bottom: 10px; }
+  .item-card-title { font-size: 13px; padding-right: 50px; }
+  .item-card-desc { font-size: 12px; padding-right: 40px; }
+  .item-card-actions { top: 12px; right: 12px; }
+  .item-card-actions .action-icon { width: 32px; height: 32px; }
+  .item-card-select { top: 14px; left: 12px; }
+  .item-card-select input { width: 20px; height: 20px; }
+
+  /* Approval progress */
+  .approval-progress { font-size: 12px; padding: 10px 12px; }
+
+  /* Source section */
+  .item-card-source { font-size: 11px; }
+
+  /* Buttons — bigger touch targets */
+  .btn-approve { padding: 8px 16px; font-size: 13px; }
+  .btn-teach { padding: 8px 12px; font-size: 12px; }
+  .action-icon { width: 36px; height: 36px; }
+
+  /* Chat bar — full width on mobile */
+  .chat-bar { left: 0; }
+  .chat-bar-input { padding: 10px 12px; gap: 8px; }
+  .chat-bar-input .chat-send-btn { width: 40px; height: 40px; }
+  .chat-bar-toggle { width: 36px; height: 36px; }
+  .chat-bar-suggestions { padding: 8px 12px 0; gap: 6px; }
+  .chat-suggestion { font-size: 11px; padding: 6px 12px; }
+  .chat-msg-user, .chat-msg-ai { max-width: 80%; }
+
+  /* Bulk bar */
+  .bulk-bar { bottom: 80px; padding: 8px 16px; gap: 10px; font-size: 12px; }
+
+  /* Table — horizontal scroll */
+  .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table { min-width: 600px; }
+
+  /* Modals — full screen on mobile */
+  .modal { width: 100%; max-width: 100%; border-radius: 12px 12px 0 0; max-height: 90vh; }
+  .modal-overlay { align-items: flex-end; }
+  .detail-overlay { padding-top: 0; }
+  .detail-panel { width: 100%; max-width: 100%; border-radius: 12px 12px 0 0; max-height: 95vh; }
+  .confirm-modal { max-width: 100%; }
+
+  /* Review meeting header */
+  .review-meeting-title { font-size: 16px; }
+  .review-meeting-meta { flex-wrap: wrap; gap: 8px; font-size: 12px; }
+
+  /* Review footer */
+  .review-footer { flex-direction: column; gap: 12px; padding: 12px 0; }
+  .review-footer-right { width: 100%; }
+  .review-footer-right button { flex: 1; text-align: center; }
+
+  /* Section dividers */
+  .section-divider { margin: 20px 0 14px; }
+
+  /* AI summary */
+  .ai-summary { padding: 20px 16px; }
+  .ai-summary-text { font-size: 13px; }
+
+  /* Search */
+  .search-bar { width: 100%; }
+
+  /* Toast — above chat bar */
+  .toast { bottom: 80px; }
+
+  /* Selected file name */
+  .selected-file-name { max-width: 180px; }
+}
+
+/* ============ RESPONSIVE: Small phone (≤480px) ============ */
+@media (max-width: 480px) {
+  .main { padding: 12px 12px 120px; }
+  .main-title { font-size: 16px; }
+  .page-tab { font-size: 14px; padding: 10px 12px; }
+  .item-card { border-radius: 8px; }
+  .detail-count { font-size: 14px; }
+  .btn-add-item { font-size: 12px; padding: 6px 10px; }
+  .filters-bar { flex-direction: column; align-items: stretch; }
+  .filter-select { width: 100%; }
+  .chat-bar-input .chat-ai-label { display: none; }
+  .review-footer-right { flex-direction: column; }
+  .modal-header { padding: 20px 16px 0; }
+  .modal-body { padding: 16px; }
+  .modal-footer { padding: 12px 16px 20px; flex-direction: column; gap: 8px; }
+  .modal-footer button { width: 100%; text-align: center; }
+}
 </style>
 </head>
 <body>
+<a href="#mainContent" class="skip-link">Skip to content</a>
 
 <div class="app">
   <!-- Sidebar -->
-  <aside class="sidebar">
+  <aside class="sidebar" aria-label="Main navigation">
     <div class="sidebar-brand">
       <div class="sidebar-brand-icon">A</div>
       <div>
@@ -300,12 +543,13 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
         <div class="sidebar-brand-sub">Maximilian Metti</div>
       </div>
     </div>
+    <nav aria-label="Actions">
     <div class="sidebar-section">
-      <div class="sidebar-section-label">Actions</div>
-      <div class="sidebar-item"><div class="sidebar-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>New question</div>
-      <div class="sidebar-item"><div class="sidebar-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>Chief of Staff</div>
-      <div class="sidebar-item"><div class="sidebar-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>Reports</div>
-      <div class="sidebar-item active"><div class="sidebar-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>Actions</div>
+      <div class="sidebar-section-label" id="nav-actions-label">Actions</div>
+      <div class="sidebar-item" role="button" tabindex="0"><div class="sidebar-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>New question</div>
+      <div class="sidebar-item" role="button" tabindex="0"><div class="sidebar-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>Chief of Staff</div>
+      <div class="sidebar-item" role="button" tabindex="0"><div class="sidebar-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>Reports</div>
+      <div class="sidebar-item active" role="button" tabindex="0" aria-current="page"><div class="sidebar-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>Actions</div>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-section-label">Intelligence</div>
@@ -330,17 +574,24 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
       <div class="sidebar-item" style="font-size:12px;">AstraZeneca account summary</div>
       <div class="sidebar-item" style="font-size:12px;">Revlon AI workflow transformation</div>
     </div>
+    </nav>
   </aside>
 
+  <!-- Sidebar overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
   <!-- Main content -->
-  <div class="main" id="mainContent">
+  <main class="main" id="mainContent" role="main">
     <div class="main-header">
-      <div class="main-title-area">
+      <div class="main-title-area" style="display:flex;align-items:flex-start;gap:12px;">
+        <button class="mobile-menu-btn" onclick="toggleMobileSidebar()" aria-label="Open menu" aria-expanded="false" id="mobileMenuBtn"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <div>
         <div class="main-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
         </div>
         <h1 class="main-title">Actions</h1>
         <p class="main-subtitle">Upload meeting transcripts to automatically extract action items, key decisions, and open questions. Review AI-generated outputs, assign owners, and share follow ups with your team.</p>
+      </div>
       </div>
       <button class="btn-upload" onclick="openUploadModal()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -349,22 +600,34 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
     </div>
 
     <!-- Page-level tabs -->
-    <div class="page-tabs">
-      <div class="page-tab active" data-page-tab="review" onclick="switchPageTab('review')">For your review</div>
-      <div class="page-tab" data-page-tab="all" onclick="switchPageTab('all')">All meetings</div>
+    <div class="page-tabs" role="tablist" aria-label="View mode">
+      <div class="page-tab active" data-page-tab="review" role="tab" tabindex="0" aria-selected="true" id="tab-review" aria-controls="forYourReviewContent" onclick="switchPageTab('review')" onkeydown="handleTabKey(event,'review')">For your review</div>
+      <div class="page-tab" data-page-tab="all" role="tab" tabindex="-1" aria-selected="false" id="tab-all" aria-controls="allMeetingsContent" onclick="switchPageTab('all')" onkeydown="handleTabKey(event,'all')">All</div>
     </div>
 
     <!-- "For your review" tab content -->
-    <div id="forYourReviewContent">
+    <div id="forYourReviewContent" role="tabpanel" aria-labelledby="tab-review">
       <div class="review-meeting-header">
         <div class="review-meeting-title">March MPR meeting, team review</div>
         <div class="review-meeting-meta">
           <span class="review-meeting-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> March 11, 2026</span>
-          <span class="review-meeting-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> 2 source files</span>
+          <span class="review-meeting-meta-item source-files-trigger" onclick="toggleSourceFiles()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> 2 source files</span>
+        </div>
+        <div class="source-files-dropdown" id="sourceFilesDropdown">
+          <div class="source-file-item" onclick="downloadFile('DM+C DEO & SCL - E2E Media Performance.txt')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span>DM+C DEO & SCL - E2E Media Performance.txt</span>
+            <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </div>
+          <div class="source-file-item" onclick="downloadFile('chart-234-1771215780364.png')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>chart-234-1771215780364.png</span>
+            <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </div>
         </div>
       </div>
 
-      <!-- AI Meeting Summary -->
+      <!-- AI Meeting Summary — editorial style -->
       <div class="ai-summary">
         <div class="ai-summary-header">
           <span class="ai-summary-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> AI-generated summary</span>
@@ -379,11 +642,26 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
         </div>
       </div>
 
-      <!-- Sub-tabs -->
-      <div class="sub-tabs" id="reviewSubTabs">
-        <div class="sub-tab active" data-sub-tab="actions" onclick="switchReviewSubTab('actions')">Action items (10)</div>
-        <div class="sub-tab" data-sub-tab="decisions" onclick="switchReviewSubTab('decisions')">Key decisions (7)</div>
-        <div class="sub-tab" data-sub-tab="questions" onclick="switchReviewSubTab('questions')">Open questions (9)</div>
+      <!-- Filters -->
+      <div class="filters-bar">
+        <span class="filters-label">Filter by</span>
+        <select class="filter-select" id="filterType" onchange="applyFilters()">
+          <option value="">Follow up type</option>
+          <option value="action">Action items</option>
+          <option value="decision">Key decisions</option>
+          <option value="question">Open questions</option>
+        </select>
+        <select class="filter-select" id="filterBrand" onchange="applyFilters()">
+          <option value="">Brand</option>
+          <option value="dove">Dove</option>
+          <option value="unilever">Unilever</option>
+        </select>
+        <select class="filter-select" id="filterPriority" onchange="applyFilters()">
+          <option value="">Priority</option>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
       </div>
 
       <!-- Inline review content -->
@@ -402,7 +680,7 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
     </div>
 
     <!-- "All meetings" tab content -->
-    <div id="allMeetingsContent" style="display:none;">
+    <div id="allMeetingsContent" role="tabpanel" aria-labelledby="tab-all" style="display:none;">
       <div class="search-bar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input type="text" placeholder="Search insights...">
@@ -513,29 +791,43 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
       </div>
     </div>
 
+  </main>
+</div>
+
+<!-- Bulk action bar -->
+<div class="bulk-bar" id="bulkBar">
+  <span class="bulk-bar-count" id="bulkCount">0 selected</span>
+  <button class="bulk-approve" onclick="bulkApprove()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><polyline points="20 6 9 17 4 12"/></svg>Approve selected</button>
+  <button class="bulk-deselect" onclick="bulkDeselect()">Deselect all</button>
+</div>
+
+<!-- Chat bar — persistent horizontal -->
+<div class="chat-bar" id="chatBar">
+  <div class="chat-bar-messages" id="chatMessages"></div>
+  <div class="chat-bar-suggestions" id="chatSuggestions"></div>
+  <div class="chat-bar-input">
+    <div class="chat-ai-label"><span class="ai-dot"></span> Assemble AI</div>
+    <input type="text" placeholder="Ask about this meeting..." id="chatInput" onkeydown="if(event.key==='Enter')sendChat()">
+    <button class="chat-send-btn" onclick="sendChat()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+    <button class="chat-bar-toggle" onclick="toggleChat()" title="Expand chat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="chatToggleIcon"><polyline points="18 15 12 9 6 15"/></svg></button>
   </div>
 </div>
 
-<!-- Intercom button -->
-<div class="intercom-btn">
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-</div>
-
 <!-- Toast notification -->
-<div class="toast" id="toast">
+<div class="toast" id="toast" role="status" aria-live="polite">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
   <span id="toastText"></span>
 </div>
 
 <!-- Upload Modal -->
 <div class="modal-overlay" id="uploadModal">
-  <div class="modal" style="max-width:600px;">
+  <div class="modal" style="max-width:600px;" role="dialog" aria-modal="true" aria-label="Upload meeting transcription">
     <div class="modal-header">
       <div>
         <div class="modal-title">Upload meeting transcription</div>
         <div class="modal-desc">Add transcripts, notes, and documents to generate insights.</div>
       </div>
-      <button class="modal-close" onclick="closeUploadModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="modal-close" onclick="closeUploadModal()" aria-label="Close"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body">
       <div class="form-group">
@@ -614,14 +906,14 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 
 <!-- Detail View (for viewing reviewed meetings from "All meetings" tab) -->
 <div class="detail-overlay" id="detailOverlay">
-  <div class="detail-panel">
+  <div class="detail-panel" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
     <div class="detail-header">
       <div class="detail-header-top">
         <div style="width:60px"></div>
         <div></div>
         <div class="detail-header-actions">
           <button class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
-          <button class="action-icon" onclick="closeDetail()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+          <button class="action-icon" onclick="closeDetail()" aria-label="Close detail view"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
       </div>
       <div class="detail-title" id="detailTitle">March MPR meeting, team review</div>
@@ -642,10 +934,10 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 
 <!-- Generic Confirmation Modal -->
 <div class="modal-overlay" id="confirmModal">
-  <div class="modal confirm-modal">
+  <div class="modal confirm-modal" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmMessage">
     <div class="modal-header">
       <div class="modal-title" id="confirmTitle">Delete insights</div>
-      <button class="modal-close" onclick="closeConfirmModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="modal-close" onclick="closeConfirmModal()" aria-label="Close"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body">
       <p id="confirmMessage"></p>
@@ -659,12 +951,12 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 
 <!-- Edit Item Modal -->
 <div class="modal-overlay" id="editModal">
-  <div class="modal" style="max-width:560px;" id="editModalContent"></div>
+  <div class="modal" style="max-width:560px;" id="editModalContent" role="dialog" aria-modal="true" aria-label="Edit item"></div>
 </div>
 
 <!-- Add Item Modal -->
 <div class="modal-overlay" id="addModal">
-  <div class="modal" style="max-width:560px;" id="addModalContent"></div>
+  <div class="modal" style="max-width:560px;" id="addModalContent" role="dialog" aria-modal="true" aria-label="Add item"></div>
 </div>
 
 <script>
@@ -710,11 +1002,46 @@ let currentPageTab = 'review';
 let currentReviewSubTab = 'actions';
 let confirmCallback = null;
 let approvalState = {}; // tracks approved items e.g. 'action-AI-002': true
+let selectionState = {}; // tracks selected items for bulk approve
 
 function toggleApproval(key) {
   approvalState[key] = !approvalState[key];
   renderReviewContent();
   updateConfirmButton();
+}
+
+function toggleSelect(key) {
+  selectionState[key] = !selectionState[key];
+  if (!selectionState[key]) delete selectionState[key];
+  updateBulkBar();
+}
+
+function updateBulkBar() {
+  const count = Object.keys(selectionState).length;
+  const bar = document.getElementById('bulkBar');
+  if (count > 0) {
+    bar.classList.add('show');
+    document.getElementById('bulkCount').textContent = count + ' selected';
+  } else {
+    bar.classList.remove('show');
+  }
+}
+
+function bulkApprove() {
+  Object.keys(selectionState).forEach(key => {
+    approvalState[key] = true;
+  });
+  selectionState = {};
+  updateBulkBar();
+  renderReviewContent();
+  updateConfirmButton();
+  showToast('Selected items approved.');
+}
+
+function bulkDeselect() {
+  selectionState = {};
+  updateBulkBar();
+  renderReviewContent();
 }
 
 function updateConfirmButton() {
@@ -742,8 +1069,15 @@ function showToast(text) {
 // Page-level tab switching
 function switchPageTab(tab) {
   currentPageTab = tab;
-  document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
-  document.querySelector(`.page-tab[data-page-tab="${tab}"]`).classList.add('active');
+  document.querySelectorAll('.page-tab').forEach(t => {
+    t.classList.remove('active');
+    t.setAttribute('aria-selected', 'false');
+    t.setAttribute('tabindex', '-1');
+  });
+  const active = document.querySelector(`.page-tab[data-page-tab="${tab}"]`);
+  active.classList.add('active');
+  active.setAttribute('aria-selected', 'true');
+  active.setAttribute('tabindex', '0');
 
   if (tab === 'review') {
     document.getElementById('forYourReviewContent').style.display = '';
@@ -752,25 +1086,42 @@ function switchPageTab(tab) {
     document.getElementById('forYourReviewContent').style.display = 'none';
     document.getElementById('allMeetingsContent').style.display = '';
   }
+  updateChatSuggestions();
 }
 
-// Review sub-tab switching
-function switchReviewSubTab(tab) {
-  currentReviewSubTab = tab;
-  document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
-  document.querySelector(`.sub-tab[data-sub-tab="${tab}"]`).classList.add('active');
+// Filters
+function applyFilters() {
   renderReviewContent();
+}
+
+function getFilteredType() {
+  const f = document.getElementById('filterType');
+  return f ? f.value : '';
+}
+
+function getFilteredPriority() {
+  const f = document.getElementById('filterPriority');
+  return f ? f.value : '';
 }
 
 function renderReviewContent() {
   const body = document.getElementById('reviewBody');
-  if (currentReviewSubTab === 'actions') {
-    body.innerHTML = renderActionItemsSection('10 Action items');
-  } else if (currentReviewSubTab === 'decisions') {
-    body.innerHTML = renderKeyDecisionsSection('7 Key decisions');
-  } else if (currentReviewSubTab === 'questions') {
-    body.innerHTML = renderOpenQuestionsSection('9 Open questions');
+  const typeFilter = getFilteredType();
+  const priorityFilter = getFilteredPriority();
+  let html = '';
+
+  // Show all sections, filtered by type
+  if (!typeFilter || typeFilter === 'action') {
+    const filtered = priorityFilter ? actionItems.filter(i => i.priority === priorityFilter) : actionItems;
+    html += renderActionItemsSection(filtered.length + ' Action items', filtered);
   }
+  if (!typeFilter || typeFilter === 'decision') {
+    html += renderKeyDecisionsSection(keyDecisions.length + ' Key decisions', keyDecisions);
+  }
+  if (!typeFilter || typeFilter === 'question') {
+    html += renderOpenQuestionsSection(openQuestions.length + ' Open questions', openQuestions);
+  }
+  body.innerHTML = html;
 }
 
 // Upload modal
@@ -778,8 +1129,10 @@ function openUploadModal() {
   document.getElementById('uploadModal').classList.add('show');
   document.getElementById('selectedFiles').style.display = 'none';
   document.getElementById('meetingTitle').value = '';
+  trapFocus(document.querySelector('#uploadModal .modal'));
 }
 function closeUploadModal() {
+  releaseFocus(document.querySelector('#uploadModal .modal'));
   document.getElementById('uploadModal').classList.remove('show');
 }
 function simulateFileUpload() {
@@ -793,9 +1146,6 @@ function generateInsights() {
     document.getElementById('generatingOverlay').classList.remove('show');
     // Switch to "For your review" tab and show generated insights inline
     switchPageTab('review');
-    currentReviewSubTab = 'actions';
-    document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
-    document.querySelector('.sub-tab[data-sub-tab="actions"]').classList.add('active');
     renderReviewContent();
     showToast('Insights generated successfully.');
   }, 2000);
@@ -836,14 +1186,14 @@ function renderDetailTab() {
   const footer = document.getElementById('detailFooter');
 
   if (currentTab === 'actions') {
-    body.innerHTML = renderActionItemsSection('10 Action items');
-    footer.innerHTML = `<button class="btn-danger-outline" onclick="openDeleteInsightsFromDetail()">Delete</button><button class="btn-primary" style="background:#ef4444;" onclick="closeDetail()">Download insights</button>`;
+    body.innerHTML = renderActionItemsSection('10 Action items', actionItems);
+    footer.innerHTML = `<button class="btn-danger-outline" onclick="openDeleteInsightsFromDetail()">Delete</button><button class="btn-primary" onclick="closeDetail()">Download insights</button>`;
   } else if (currentTab === 'decisions') {
-    body.innerHTML = renderKeyDecisionsSection('7 Key decisions');
-    footer.innerHTML = `<button class="btn-danger-outline" onclick="openDeleteInsightsFromDetail()">Delete</button><button class="btn-primary" style="background:#ef4444;" onclick="closeDetail()">Download insights</button>`;
+    body.innerHTML = renderKeyDecisionsSection('7 Key decisions', keyDecisions);
+    footer.innerHTML = `<button class="btn-danger-outline" onclick="openDeleteInsightsFromDetail()">Delete</button><button class="btn-primary" onclick="closeDetail()">Download insights</button>`;
   } else if (currentTab === 'questions') {
-    body.innerHTML = renderOpenQuestionsSection('9 Open questions');
-    footer.innerHTML = `<button class="btn-danger-outline" onclick="openDeleteInsightsFromDetail()">Delete</button><button class="btn-primary" style="background:#ef4444;" onclick="closeDetail()">Download insights</button>`;
+    body.innerHTML = renderOpenQuestionsSection('9 Open questions', openQuestions);
+    footer.innerHTML = `<button class="btn-danger-outline" onclick="openDeleteInsightsFromDetail()">Delete</button><button class="btn-primary" onclick="closeDetail()">Download insights</button>`;
   }
 }
 
@@ -853,25 +1203,27 @@ function closeDetail() {
 
 // ============ RENDER SECTIONS ============
 
-function renderActionItemsSection(headerText) {
-  const total = actionItems.length;
-  const approved = actionItems.filter(i => approvalState['action-'+i.id]).length;
-  let html = `<div class="approval-progress"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>${approved} of ${total} items approved</span><div class="approval-progress-bar"><div class="approval-progress-fill" style="width:${(approved/total)*100}%"></div></div></div>`;
-  html += `<div class="detail-section-header"><div class="detail-count">${headerText}</div><button class="btn-add-item" onclick="openAddActionItem()">+ Add new item</button></div>`;
-  html += '<div style="font-size:12px;font-weight:600;color:#6b7280;margin-bottom:8px;">Action items</div>';
-  actionItems.forEach(item => {
+function renderActionItemsSection(headerText, items) {
+  items = items || actionItems;
+  const total = items.length;
+  const approved = items.filter(i => approvalState['action-'+i.id]).length;
+  let html = `<div class="section-divider"><div class="section-divider-label">Action Items</div></div>`;
+  html += `<div class="approval-progress"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>${approved} of ${total} items approved</span><div class="approval-progress-bar"><div class="approval-progress-fill" style="width:${total?((approved/total)*100):0}%"></div></div></div>`;
+  html += `<div class="detail-section-header"><div class="detail-count">${headerText}</div><button class="btn-add-item" onclick="openAddActionItem()">+ Add</button></div>`;
+  items.forEach(item => {
     const badgeClass = item.priority === 'High' ? 'badge-high' : 'badge-medium';
     const isApproved = approvalState['action-'+item.id];
     const hasSuggestions = item.suggestedOwners && item.suggestedOwners.length > 0;
     const suggestionsHtml = hasSuggestions ? `<div class="suggested-banner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Suggested owners: ${item.suggestedOwners.join(', ')} &mdash; <a href="#" onclick="openEditActionItem('${item.id}');return false;" style="color:#92400e;font-weight:600;">Review &amp; assign</a></div>` : '';
+    const isSelected = selectionState['action-'+item.id];
     html += `<div class="item-card ${isApproved ? 'approved' : ''}" id="card-action-${item.id}">
+      <div class="item-card-select"><input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleSelect('action-${item.id}')"></div>
       <div class="item-card-actions">
         <button class="action-icon" onclick="openEditActionItem('${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
         <button class="action-icon" onclick="openDeleteItem('action item', '${item.title.substring(0,40)}...')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
       </div>
       <div class="item-card-header">
         <span class="badge ${badgeClass}">${item.priority}</span>
-        <span class="item-id">ID: ${item.id}</span>
       </div>
       ${suggestionsHtml}
       <div class="item-card-title">${item.title}</div>
@@ -882,37 +1234,46 @@ function renderActionItemsSection(headerText) {
       <div class="item-card-meta">
         <span class="item-card-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Due: ${item.due}</span>
       </div>
-      <div class="item-card-source"><span>Source:</span> "${item.source.substring(0,120)}..." <a href="#" class="read-more">Read more</a></div>
-      <div class="item-card-approve">
-        <input type="checkbox" class="approve-checkbox" id="approve-action-${item.id}" ${isApproved ? 'checked' : ''} onchange="toggleApproval('action-${item.id}')">
-        <label for="approve-action-${item.id}" class="approve-label ${isApproved ? 'approved' : ''}">${isApproved ? 'Approved' : 'Approve this item'}</label>
+      <div class="item-card-source" onclick="toggleSource(this)"><span>Source:</span> <span class="source-preview">"${item.source.substring(0,120)}..."</span><span class="source-full">"${item.source}"</span> <a href="#" class="read-more" onclick="event.stopPropagation()">Read more</a></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid #f3f4f6;">
+        <button class="btn-teach" onclick="toggleFeedback('action-${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Teach</button>
+        <button class="btn-approve ${isApproved ? 'is-approved' : ''}" onclick="toggleApproval('action-${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> ${isApproved ? 'Approved' : 'Approve'}</button>
+      </div>
+      <div class="feedback-panel" id="feedback-action-${item.id}">
+        <textarea placeholder="Help us improve — what should be different about this item?"></textarea>
+        <div class="feedback-panel-actions">
+          <button class="btn-secondary" style="padding:6px 14px;font-size:12px;" onclick="toggleFeedback('action-${item.id}')">Cancel</button>
+          <button class="btn-primary" style="padding:6px 14px;font-size:12px;" onclick="submitFeedback('action-${item.id}')">Send feedback</button>
+        </div>
       </div>
     </div>`;
   });
   return html;
 }
 
-function renderKeyDecisionsSection(headerText) {
-  const total = keyDecisions.length;
-  const approved = keyDecisions.filter(i => approvalState['decision-'+i.id]).length;
-  let html = `<div class="approval-progress"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>${approved} of ${total} decisions approved</span><div class="approval-progress-bar"><div class="approval-progress-fill" style="width:${(approved/total)*100}%"></div></div></div>`;
-  html += `<div class="detail-section-header"><div class="detail-count">${headerText}</div><button class="btn-add-item" onclick="openAddDecision()">+ Add new decision</button></div>`;
-  html += '<div style="font-size:12px;font-weight:600;color:#6b7280;margin-bottom:8px;">Key decisions</div>';
-  keyDecisions.forEach(item => {
+function renderKeyDecisionsSection(headerText, items) {
+  items = items || keyDecisions;
+  const total = items.length;
+  const approved = items.filter(i => approvalState['decision-'+i.id]).length;
+  let html = `<div class="section-divider"><div class="section-divider-label">Key Decisions</div></div>`;
+  html += `<div class="approval-progress"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>${approved} of ${total} decisions approved</span><div class="approval-progress-bar"><div class="approval-progress-fill" style="width:${total?((approved/total)*100):0}%"></div></div></div>`;
+  html += `<div class="detail-section-header"><div class="detail-count">${headerText}</div><button class="btn-add-item" onclick="openAddDecision()">+ Add</button></div>`;
+  items.forEach(item => {
     const isApproved = approvalState['decision-'+item.id];
     const suggestions = [];
     if (item.suggestedOwners && item.suggestedOwners.length) suggestions.push('Owners: ' + item.suggestedOwners.join(', '));
     if (item.suggestedType && item.suggestedType.length) suggestions.push('Type: ' + item.suggestedType.join(', '));
     const hasSuggestions = suggestions.length > 0;
     const suggestionsHtml = hasSuggestions ? `<div class="suggested-banner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Suggested ${suggestions.join(' | ')} &mdash; <a href="#" onclick="openEditDecision('${item.id}');return false;" style="color:#92400e;font-weight:600;">Review &amp; update</a></div>` : '';
+    const isSelected = selectionState['decision-'+item.id];
     html += `<div class="item-card ${isApproved ? 'approved' : ''}">
+      <div class="item-card-select"><input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleSelect('decision-${item.id}')"></div>
       <div class="item-card-actions">
         <button class="action-icon" onclick="openEditDecision('${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
         <button class="action-icon" onclick="openDeleteItem('key decision', '${item.title.substring(0,50)}...')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
       </div>
       <div class="item-card-header">
         <span class="badge badge-confidence">${item.confidence}</span>
-        <span class="item-id">ID: ${item.id}</span>
         <span class="badge badge-type">${item.type}</span>
       </div>
       ${suggestionsHtml}
@@ -921,37 +1282,46 @@ function renderKeyDecisionsSection(headerText) {
       <div class="item-card-meta">
         <span class="item-card-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Owners: ${item.owners}</span>
       </div>
-      <div class="item-card-source"><span>Source:</span> "${item.source.substring(0,120)}..." <a href="#" class="read-more">Read more</a></div>
-      <div class="item-card-approve">
-        <input type="checkbox" class="approve-checkbox" id="approve-decision-${item.id}" ${isApproved ? 'checked' : ''} onchange="toggleApproval('decision-${item.id}')">
-        <label for="approve-decision-${item.id}" class="approve-label ${isApproved ? 'approved' : ''}">${isApproved ? 'Approved' : 'Approve this decision'}</label>
+      <div class="item-card-source" onclick="toggleSource(this)"><span>Source:</span> <span class="source-preview">"${item.source.substring(0,120)}..."</span><span class="source-full">"${item.source}"</span> <a href="#" class="read-more" onclick="event.stopPropagation()">Read more</a></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid #f3f4f6;">
+        <button class="btn-teach" onclick="toggleFeedback('decision-${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Teach</button>
+        <button class="btn-approve ${isApproved ? 'is-approved' : ''}" onclick="toggleApproval('decision-${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> ${isApproved ? 'Approved' : 'Approve'}</button>
+      </div>
+      <div class="feedback-panel" id="feedback-decision-${item.id}">
+        <textarea placeholder="Help us improve — what should be different about this decision?"></textarea>
+        <div class="feedback-panel-actions">
+          <button class="btn-secondary" style="padding:6px 14px;font-size:12px;" onclick="toggleFeedback('decision-${item.id}')">Cancel</button>
+          <button class="btn-primary" style="padding:6px 14px;font-size:12px;" onclick="submitFeedback('decision-${item.id}')">Send feedback</button>
+        </div>
       </div>
     </div>`;
   });
   return html;
 }
 
-function renderOpenQuestionsSection(headerText) {
-  const total = openQuestions.length;
-  const approved = openQuestions.filter(i => approvalState['question-'+i.id]).length;
-  let html = `<div class="approval-progress"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>${approved} of ${total} questions approved</span><div class="approval-progress-bar"><div class="approval-progress-fill" style="width:${(approved/total)*100}%"></div></div></div>`;
-  html += `<div class="detail-section-header"><div class="detail-count">${headerText}</div><button class="btn-add-item" onclick="openAddQuestion()">+ Add new question</button></div>`;
-  html += '<div style="font-size:12px;font-weight:600;color:#6b7280;margin-bottom:8px;">Open questions</div>';
-  openQuestions.forEach(item => {
+function renderOpenQuestionsSection(headerText, items) {
+  items = items || openQuestions;
+  const total = items.length;
+  const approved = items.filter(i => approvalState['question-'+i.id]).length;
+  let html = `<div class="section-divider"><div class="section-divider-label">Open Questions</div></div>`;
+  html += `<div class="approval-progress"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>${approved} of ${total} questions approved</span><div class="approval-progress-bar"><div class="approval-progress-fill" style="width:${total?((approved/total)*100):0}%"></div></div></div>`;
+  html += `<div class="detail-section-header"><div class="detail-count">${headerText}</div><button class="btn-add-item" onclick="openAddQuestion()">+ Add</button></div>`;
+  items.forEach(item => {
     const isApproved = approvalState['question-'+item.id];
     const suggestions = [];
     if (item.suggestedOwners && item.suggestedOwners.length) suggestions.push('Owners: ' + item.suggestedOwners.join(', '));
     if (item.suggestedStatus && item.suggestedStatus.length) suggestions.push('Status: ' + item.suggestedStatus.join(', '));
     const hasSuggestions = suggestions.length > 0;
     const suggestionsHtml = hasSuggestions ? `<div class="suggested-banner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Suggested ${suggestions.join(' | ')} &mdash; <a href="#" onclick="openEditQuestion('${item.id}');return false;" style="color:#92400e;font-weight:600;">Review &amp; update</a></div>` : '';
+    const isSelected = selectionState['question-'+item.id];
     html += `<div class="item-card ${isApproved ? 'approved' : ''}">
+      <div class="item-card-select"><input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleSelect('question-${item.id}')"></div>
       <div class="item-card-actions">
         <button class="action-icon" onclick="openEditQuestion('${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
         <button class="action-icon" onclick="openDeleteItem('open question', '${item.topic}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
       </div>
       <div class="item-card-header">
         <span class="badge ${item.statusClass}">${item.status}</span>
-        <span class="item-id">ID: ${item.id}</span>
       </div>
       ${suggestionsHtml}
       <div class="item-card-title">${item.topic}</div>
@@ -962,10 +1332,17 @@ function renderOpenQuestionsSection(headerText) {
       <div class="item-card-meta">
         <span class="item-card-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> Raised by: ${item.raisedBy}</span>
       </div>
-      <div class="item-card-source"><span>Source:</span> "${item.source.substring(0,120)}..." <a href="#" class="read-more">Read more</a></div>
-      <div class="item-card-approve">
-        <input type="checkbox" class="approve-checkbox" id="approve-question-${item.id}" ${isApproved ? 'checked' : ''} onchange="toggleApproval('question-${item.id}')">
-        <label for="approve-question-${item.id}" class="approve-label ${isApproved ? 'approved' : ''}">${isApproved ? 'Approved' : 'Approve this question'}</label>
+      <div class="item-card-source" onclick="toggleSource(this)"><span>Source:</span> <span class="source-preview">"${item.source.substring(0,120)}..."</span><span class="source-full">"${item.source}"</span> <a href="#" class="read-more" onclick="event.stopPropagation()">Read more</a></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid #f3f4f6;">
+        <button class="btn-teach" onclick="toggleFeedback('question-${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Teach</button>
+        <button class="btn-approve ${isApproved ? 'is-approved' : ''}" onclick="toggleApproval('question-${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> ${isApproved ? 'Approved' : 'Approve'}</button>
+      </div>
+      <div class="feedback-panel" id="feedback-question-${item.id}">
+        <textarea placeholder="Help us improve — what should be different about this question?"></textarea>
+        <div class="feedback-panel-actions">
+          <button class="btn-secondary" style="padding:6px 14px;font-size:12px;" onclick="toggleFeedback('question-${item.id}')">Cancel</button>
+          <button class="btn-primary" style="padding:6px 14px;font-size:12px;" onclick="submitFeedback('question-${item.id}')">Send feedback</button>
+        </div>
       </div>
     </div>`;
   });
@@ -980,6 +1357,7 @@ function openDeleteInsights() {
   document.getElementById('confirmAction').textContent = 'Delete';
   confirmCallback = () => { showToast('Insights deleted.'); };
   document.getElementById('confirmModal').classList.add('show');
+  trapFocus(document.querySelector('#confirmModal .modal'));
 }
 function openDeleteInsightsFromDetail() {
   closeDetail();
@@ -993,6 +1371,7 @@ function openDeleteItem(type, name) {
   document.getElementById('confirmModal').classList.add('show');
 }
 function closeConfirmModal() {
+  releaseFocus(document.querySelector('#confirmModal .modal'));
   document.getElementById('confirmModal').classList.remove('show');
 }
 function executeConfirmAction() {
@@ -1023,6 +1402,7 @@ function openEditActionItem(id) {
     <div class="modal-footer"><button class="btn-secondary" onclick="closeEditModal()">Cancel</button><button class="btn-primary" onclick="saveEdit()">Save updates</button></div>
   `;
   document.getElementById('editModal').classList.add('show');
+  trapFocus(document.getElementById('editModalContent'));
 }
 
 function openEditDecision(id) {
@@ -1076,7 +1456,7 @@ function openEditQuestion(id) {
   document.getElementById('editModal').classList.add('show');
 }
 
-function closeEditModal() { document.getElementById('editModal').classList.remove('show'); }
+function closeEditModal() { releaseFocus(document.getElementById('editModalContent')); document.getElementById('editModal').classList.remove('show'); }
 function saveEdit() {
   closeEditModal();
   showToast('The insights have been updated.');
@@ -1128,16 +1508,177 @@ function openAddQuestion() {
   document.getElementById('addModal').classList.add('show');
 }
 
-function closeAddModal() { document.getElementById('addModal').classList.remove('show'); }
+function closeAddModal() { releaseFocus(document.getElementById('addModalContent')); document.getElementById('addModal').classList.remove('show'); }
 function addItem() {
   closeAddModal();
   showToast('Item added successfully.');
+}
+
+// ============ CHAT BAR ============
+
+let chatExpanded = false;
+function toggleChat() {
+  chatExpanded = !chatExpanded;
+  document.getElementById('chatBar').classList.toggle('expanded', chatExpanded);
+  const icon = document.getElementById('chatToggleIcon');
+  if (chatExpanded) {
+    icon.innerHTML = '<polyline points="6 15 12 9 18 15"/>';
+  } else {
+    icon.innerHTML = '<polyline points="18 15 12 9 6 15"/>';
+  }
+}
+
+function updateChatSuggestions() {
+  const el = document.getElementById('chatSuggestions');
+  const suggestions = getChatSuggestions();
+  el.innerHTML = suggestions.map(s => `<button class="chat-suggestion" onclick="useSuggestion(this)">${s}</button>`).join('');
+}
+
+function getChatSuggestions() {
+  if (currentPageTab === 'all') {
+    return [
+      'Which meetings still need review?',
+      'Summarize all outstanding action items',
+      'Common themes in recent meetings'
+    ];
+  }
+  return [
+    'What are the highest priority items?',
+    'Summarize key decisions',
+    'Which items have suggested changes?',
+    'What data gaps were flagged?'
+  ];
+}
+
+function useSuggestion(btn) {
+  document.getElementById('chatInput').value = btn.textContent;
+  sendChat();
+}
+
+function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  // Auto-expand on first message
+  if (!chatExpanded) toggleChat();
+  const body = document.getElementById('chatMessages');
+  body.innerHTML += `<div class="chat-msg-user">${msg}</div>`;
+  input.value = '';
+  body.scrollTop = body.scrollHeight;
+  setTimeout(() => {
+    body.innerHTML += `<div class="chat-msg-ai">I'll look into that for you. Based on the meeting data, here's what I found...</div>`;
+    body.scrollTop = body.scrollHeight;
+  }, 800);
+}
+
+// ============ SOURCE & FEEDBACK ============
+
+function toggleSource(el) {
+  el.classList.toggle('expanded');
+}
+
+function toggleSourceFiles() {
+  const dd = document.getElementById('sourceFilesDropdown');
+  dd.classList.toggle('open');
+}
+
+function downloadFile(name) {
+  showToast('Downloading ' + name);
+  document.getElementById('sourceFilesDropdown').classList.remove('open');
+}
+
+function toggleFeedback(key) {
+  const panel = document.getElementById('feedback-' + key);
+  if (panel) panel.classList.toggle('open');
+}
+
+function submitFeedback(key) {
+  const panel = document.getElementById('feedback-' + key);
+  if (panel) panel.classList.remove('open');
+  showToast('Feedback submitted. Thank you!');
+}
+
+// ============ KEYBOARD & ACCESSIBILITY ============
+
+function handleTabKey(e, tab) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    switchPageTab(tab);
+  }
+  // Arrow key navigation between tabs
+  if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+    e.preventDefault();
+    const tabs = ['review', 'all'];
+    const idx = tabs.indexOf(tab);
+    const next = e.key === 'ArrowRight' ? tabs[(idx + 1) % tabs.length] : tabs[(idx - 1 + tabs.length) % tabs.length];
+    switchPageTab(next);
+    document.getElementById('tab-' + next).focus();
+  }
+}
+
+// Focus trap for modals
+function trapFocus(modalEl) {
+  const focusable = modalEl.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+  if (focusable.length === 0) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  first.focus();
+  modalEl._focusTrap = function(e) {
+    if (e.key !== 'Tab') return;
+    if (e.shiftKey) {
+      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+    } else {
+      if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+    if (e.key === 'Escape') {
+      // Close the nearest modal
+      const overlay = modalEl.closest('.modal-overlay') || modalEl.closest('.detail-overlay');
+      if (overlay) overlay.classList.remove('show');
+    }
+  };
+  modalEl.addEventListener('keydown', modalEl._focusTrap);
+}
+
+function releaseFocus(modalEl) {
+  if (modalEl._focusTrap) {
+    modalEl.removeEventListener('keydown', modalEl._focusTrap);
+    delete modalEl._focusTrap;
+  }
+}
+
+// ============ MOBILE SIDEBAR ============
+
+function toggleMobileSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const isOpen = sidebar.classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+  const btn = document.getElementById('mobileMenuBtn');
+  if (btn) btn.setAttribute('aria-expanded', isOpen);
+}
+
+function closeMobileSidebar() {
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+  const btn = document.getElementById('mobileMenuBtn');
+  if (btn) btn.setAttribute('aria-expanded', 'false');
 }
 
 // ============ INIT ============
 
 // Render default review content on page load
 renderReviewContent();
+updateChatSuggestions();
+
+// Close modals on Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    if (document.getElementById('uploadModal').classList.contains('show')) closeUploadModal();
+    else if (document.getElementById('editModal').classList.contains('show')) closeEditModal();
+    else if (document.getElementById('addModal').classList.contains('show')) closeAddModal();
+    else if (document.getElementById('confirmModal').classList.contains('show')) closeConfirmModal();
+    else if (document.getElementById('detailOverlay').classList.contains('show')) closeDetail();
+  }
+});
 
 // Close modals on overlay click
 document.getElementById('uploadModal').addEventListener('click', function(e) { if (e.target === this) closeUploadModal(); });
