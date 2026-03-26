@@ -111,9 +111,9 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 /* Table footer */
 .table-footer { padding: 12px 16px; color: #6b7280; font-size: 13px; border-top: 1px solid #f3f4f6; background: #f9fafb; }
 
-/* Toast — positioned above chat bar */
-.toast { position: fixed; bottom: 72px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; padding: 12px 20px; background: #065f46; color: #fff; border-radius: 10px; font-weight: 500; font-size: 14px; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.15); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
-.toast.show { opacity: 1; }
+/* Toast — slide up from chat bar */
+.toast { position: fixed; bottom: 72px; left: 50%; display: flex; align-items: center; gap: 10px; padding: 12px 20px; background: #065f46; color: #fff; border-radius: 10px; font-weight: 500; font-size: 14px; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.15); opacity: 0; transform: translateX(-50%) translateY(12px); transition: opacity 0.3s, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: none; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .toast svg { width: 20px; height: 20px; color: #34d399; flex-shrink: 0; }
 
 /* Modal overlay */
@@ -265,7 +265,35 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 .generating-overlay.show { opacity: 1; pointer-events: auto; }
 .spinner { width: 40px; height: 40px; border: 3px solid #e5e7eb; border-top-color: #2563eb; border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.generating-text { color: #fff; font-weight: 600; font-size: 16px; }
+.generating-text { color: #fff; font-weight: 600; font-size: 16px; transition: opacity 0.3s; }
+.generating-steps { color: rgba(255,255,255,0.6); font-size: 13px; margin-top: 4px; transition: opacity 0.3s; }
+
+/* Card entrance animation */
+@keyframes cardIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.item-card { animation: cardIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.item-card:nth-child(2) { animation-delay: 0.04s; }
+.item-card:nth-child(3) { animation-delay: 0.08s; }
+.item-card:nth-child(4) { animation-delay: 0.12s; }
+.item-card:nth-child(5) { animation-delay: 0.16s; }
+.item-card:nth-child(n+6) { animation-delay: 0.2s; }
+
+/* Approved card — smooth green transition */
+.item-card.approved { border-color: #86efac; background: #f0fdf4; transition: border-color 0.4s, background 0.4s, box-shadow 0.15s; }
+
+/* Approval progress — glow at 100% */
+.approval-progress.complete { background: #f0fdf4; border-color: #86efac; color: #16a34a; animation: progressGlow 1.5s ease; }
+@keyframes progressGlow { 0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.3); } 50% { box-shadow: 0 0 0 6px rgba(34,197,94,0); } 100% { box-shadow: none; } }
+
+/* Chat typing indicator */
+.chat-typing { align-self: flex-start; display: flex; gap: 4px; padding: 10px 16px; background: #f3f4f6; border-radius: 12px 12px 12px 4px; }
+.chat-typing-dot { width: 6px; height: 6px; background: #9ca3af; border-radius: 50%; animation: typingBounce 1.2s ease-in-out infinite; }
+.chat-typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.chat-typing-dot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes typingBounce { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-4px); opacity: 1; } }
+
+/* Checkmark draw animation */
+@keyframes checkDraw { from { stroke-dashoffset: 20; } to { stroke-dashoffset: 0; } }
+.btn-approve.just-approved svg { stroke-dasharray: 20; animation: checkDraw 0.3s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
 
 /* Chat bar — persistent horizontal bottom bar */
 .chat-bar { position: fixed; bottom: 0; left: 260px; right: 0; background: #fff; border-top: 1px solid #e5e7eb; z-index: 50; display: flex; flex-direction: column; transition: height 0.25s ease; box-shadow: 0 -2px 12px rgba(0,0,0,0.04); }
@@ -920,7 +948,8 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 <!-- Generating overlay -->
 <div class="generating-overlay" id="generatingOverlay">
   <div class="spinner"></div>
-  <div class="generating-text">Generating insights...</div>
+  <div class="generating-text" id="generatingText">Generating insights...</div>
+  <div class="generating-steps" id="generatingSteps">Reading transcript...</div>
 </div>
 
 <!-- Detail View (for viewing reviewed meetings from "All meetings" tab) -->
@@ -1024,9 +1053,23 @@ let approvalState = {}; // tracks approved items e.g. 'action-AI-002': true
 let selectionState = {}; // tracks selected items for bulk approve
 
 function toggleApproval(key) {
+  const wasApproved = approvalState[key];
   approvalState[key] = !approvalState[key];
   renderReviewContent();
   updateConfirmButton();
+  // Trigger checkmark draw animation on the just-approved button
+  if (!wasApproved) {
+    const card = document.getElementById('card-' + key) || document.querySelector(`[id*="${key.split('-').pop()}"] .btn-approve`);
+    document.querySelectorAll('.btn-approve.is-approved').forEach(btn => {
+      // Find the one inside the right card by checking nearby
+      if (btn.closest('.item-card.approved')) {
+        btn.classList.add('just-approved');
+        setTimeout(() => btn.classList.remove('just-approved'), 400);
+      }
+    });
+  }
+  // Check if all items in any section are approved — celebrate
+  checkProgressCelebration();
 }
 
 function toggleSelect(key) {
@@ -1047,6 +1090,7 @@ function updateBulkBar() {
 }
 
 function bulkApprove() {
+  const count = Object.keys(selectionState).length;
   Object.keys(selectionState).forEach(key => {
     approvalState[key] = true;
   });
@@ -1054,7 +1098,20 @@ function bulkApprove() {
   updateBulkBar();
   renderReviewContent();
   updateConfirmButton();
-  showToast('Selected items approved.');
+  showToast(count + ' item' + (count !== 1 ? 's' : '') + ' approved.');
+  checkProgressCelebration();
+}
+
+function checkProgressCelebration() {
+  setTimeout(() => {
+    document.querySelectorAll('.approval-progress').forEach(bar => {
+      const fill = bar.querySelector('.approval-progress-fill');
+      if (fill && fill.style.width === '100%') {
+        bar.classList.add('complete');
+        setTimeout(() => bar.classList.remove('complete'), 1600);
+      }
+    });
+  }, 50);
 }
 
 function bulkDeselect() {
@@ -1161,8 +1218,28 @@ function simulateFileUpload() {
 function generateInsights() {
   closeUploadModal();
   document.getElementById('generatingOverlay').classList.add('show');
+  // Rotating contextual messages
+  const steps = [
+    'Reading transcript...',
+    'Identifying action items...',
+    'Extracting key decisions...',
+    'Flagging open questions...',
+    'Matching owners to items...',
+    'Finalizing insights...'
+  ];
+  let stepIdx = 0;
+  const stepEl = document.getElementById('generatingSteps');
+  const stepInterval = setInterval(() => {
+    stepIdx++;
+    if (stepIdx < steps.length && stepEl) {
+      stepEl.style.opacity = '0';
+      setTimeout(() => { stepEl.textContent = steps[stepIdx]; stepEl.style.opacity = '1'; }, 150);
+    }
+  }, 350);
   setTimeout(() => {
+    clearInterval(stepInterval);
     document.getElementById('generatingOverlay').classList.remove('show');
+    if (stepEl) { stepEl.textContent = steps[0]; stepEl.style.opacity = '1'; }
     // Switch to "For your review" tab and show generated insights inline
     switchPageTab('review');
     renderReviewContent();
@@ -1578,16 +1655,20 @@ function sendChat() {
   const input = document.getElementById('chatInput');
   const msg = input.value.trim();
   if (!msg) return;
-  // Auto-expand on first message
   if (!chatExpanded) toggleChat();
   const body = document.getElementById('chatMessages');
-  body.innerHTML += `<div class="chat-msg-user">${msg}</div>`;
+  body.insertAdjacentHTML('beforeend', `<div class="chat-msg-user">${msg}</div>`);
   input.value = '';
   body.scrollTop = body.scrollHeight;
+  // Show typing indicator
+  body.insertAdjacentHTML('beforeend', `<div class="chat-typing" id="chatTyping"><div class="chat-typing-dot"></div><div class="chat-typing-dot"></div><div class="chat-typing-dot"></div></div>`);
+  body.scrollTop = body.scrollHeight;
   setTimeout(() => {
-    body.innerHTML += `<div class="chat-msg-ai">I'll look into that for you. Based on the meeting data, here's what I found...</div>`;
+    const typing = document.getElementById('chatTyping');
+    if (typing) typing.remove();
+    body.insertAdjacentHTML('beforeend', `<div class="chat-msg-ai">I'll look into that for you. Based on the meeting data, here's what I found...</div>`);
     body.scrollTop = body.scrollHeight;
-  }, 800);
+  }, 1200);
 }
 
 // ============ SOURCE & FEEDBACK ============
